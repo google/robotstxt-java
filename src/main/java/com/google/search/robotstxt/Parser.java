@@ -28,7 +28,7 @@ public abstract class Parser {
     UNKNOWN
   }
 
-  private ParseHandler parseHandler;
+  protected ParseHandler parseHandler;
 
   /**
    * Parser must follow specific {@link ParseHandler} rules in order to parse. Thus it requires

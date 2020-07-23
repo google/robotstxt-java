@@ -21,6 +21,16 @@ package com.google.search.robotstxt;
  */
 public interface ParseHandler {
   /**
+   * Handler for the beginning of parsing process.
+   */
+  void handleStart();
+
+  /**
+   * Handler for the end of parsing process.
+   */
+  void handleEnd();
+
+  /**
    * Directive receiver. Each directive consists of type and value.
    *
    * @param directiveType type of received directive

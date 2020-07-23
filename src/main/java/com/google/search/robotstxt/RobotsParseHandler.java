@@ -14,10 +14,23 @@
 
 package com.google.search.robotstxt;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Implementation of parsing strategy used in robots.txt parsing.
  */
 public class RobotsParseHandler implements ParseHandler {
+  @Override
+  public void handleStart() {
+
+  }
+
+  @Override
+  public void handleEnd() {
+
+  }
+
   @Override
   public void handleDirective(Parser.DirectiveType directiveType, String directiveValue) {
 
@@ -27,4 +40,6 @@ public class RobotsParseHandler implements ParseHandler {
   public RobotsMatcher compute() {
     return null;
   }
+
+  private List<Map.Entry<List<String>, List<Map.Entry<Parser.DirectiveType, String>>>> robots;
 }
