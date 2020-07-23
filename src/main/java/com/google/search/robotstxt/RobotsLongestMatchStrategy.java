@@ -18,7 +18,7 @@ package com.google.search.robotstxt;
  * Implementation of matching strategy used in robots.txt matching. Implements longest-match
  * strategy.
  */
-public class RobotsMatchingStrategy implements MatchingStrategy {
+public class RobotsLongestMatchStrategy implements MatchingStrategy {
   @Override
   public int matchAllowPriority(String targetUrl, String directiveValue) {
     return 0;
