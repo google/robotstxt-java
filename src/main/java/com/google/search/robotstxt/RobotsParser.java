@@ -14,6 +14,9 @@
 
 package com.google.search.robotstxt;
 
+/**
+ * Robots.txt parser implementation.
+ */
 public class RobotsParser extends Parser {
   public RobotsParser(ParseHandler parseHandler) {
     super(parseHandler);

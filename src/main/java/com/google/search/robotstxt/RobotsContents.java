@@ -17,8 +17,18 @@ package com.google.search.robotstxt;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Representation of robots.txt contents: multiple groups of rules.
+ */
 public class RobotsContents {
+  /**
+   * Representation of robots.txt group of rules: multiple user-agents to which
+   * multiple rules are applied.
+   */
   static class Group {
+    /**
+     * Representation of robots.txt rule: pair of directive and value.
+     */
     static class Rule {
       private final Parser.DirectiveType directiveType;
       private final String directiveValue;
