@@ -31,6 +31,16 @@ public abstract class Parser {
   private ParseHandler parseHandler;
 
   /**
+   * Parser must follow specific {@link ParseHandler} rules in order to parse. Thus it requires
+   * an instance of it upon creation.
+   *
+   * @param parseHandler handler to follow during parsing process.
+   */
+  public Parser(ParseHandler parseHandler) {
+    this.parseHandler = parseHandler;
+  }
+
+  /**
    * Method to parse robots.txt file into a matcher.
    *
    * @param robotsTxtBody body of robots.txt file to parse
