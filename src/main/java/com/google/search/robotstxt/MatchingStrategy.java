@@ -14,14 +14,8 @@
 
 package com.google.search.robotstxt;
 
-import com.google.search.robotstxt.example.ExampleProtos.Example;
+public interface MatchingStrategy {
+  int matchAllowPriority(final String targetUrl, final String directiveValue);
 
-/** Hello world! */
-public class App {
-  public static void main(String[] args) {
-    System.out.println("Hello World!");
-    Example aProto = Example.newBuilder().setSomeField("Hello World!").addSomeRepeated(42).build();
-
-    System.out.println("My proto:\n" + aProto);
-  }
+  int matchDisallowPriority(final String targetUrl, final String directiveValue);
 }
