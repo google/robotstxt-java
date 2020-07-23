@@ -19,5 +19,9 @@ package com.google.search.robotstxt;
  * to a {@link MatchingStrategy} class.
  */
 public class RobotsMatcher {
+  private final RobotsContents robotsContents;
 
+  public RobotsMatcher(final RobotsContents robotsContents) {
+    this.robotsContents = robotsContents;
+  }
 }

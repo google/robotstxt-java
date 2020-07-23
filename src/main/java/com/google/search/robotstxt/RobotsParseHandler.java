@@ -14,32 +14,68 @@
 
 package com.google.search.robotstxt;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Implementation of parsing strategy used in robots.txt parsing.
  */
 public class RobotsParseHandler implements ParseHandler {
+  private RobotsContents robotsContents;
+  private RobotsContents.Group currentGroup;
+
   @Override
   public void handleStart() {
+    robotsContents = new RobotsContents();
+    currentGroup = new RobotsContents.Group();
+  }
 
+  private void flushCompleteGroup(boolean createNew) {
+    if (currentGroup.countOfRules() > 0) {
+      robotsContents.addGroup(currentGroup);
+      if (createNew) {
+        currentGroup = new RobotsContents.Group();
+      }
+    }
   }
 
   @Override
   public void handleEnd() {
+    flushCompleteGroup(false);
+  }
 
+  private void handleUserAgent(final String value) {
+    flushCompleteGroup(true);
+    int end = 0;
+    for (; end < value.length(); end++) {
+      final char ch = value.charAt(end);
+      if (!Character.isAlphabetic(ch) && ch != '-' && ch != '_') {
+        break;
+      }
+    }
+    currentGroup.addUserAgent(value.substring(0, end));
   }
 
   @Override
-  public void handleDirective(Parser.DirectiveType directiveType, String directiveValue) {
-
+  public void handleDirective(final Parser.DirectiveType directiveType,
+                              final String directiveValue) {
+    switch (directiveType) {
+      case USER_AGENT: {
+        handleUserAgent(directiveValue);
+        break;
+      }
+      case ALLOW:
+      case DISALLOW: {
+        currentGroup.addRule(directiveType, directiveValue);
+        break;
+      }
+      case SITEMAP:
+      case UNKNOWN: {
+        // Ignored.
+        break;
+      }
+    }
   }
 
   @Override
   public RobotsMatcher compute() {
-    return null;
+    return new RobotsMatcher(robotsContents);
   }
-
-  private List<Map.Entry<List<String>, List<Map.Entry<Parser.DirectiveType, String>>>> robots;
 }

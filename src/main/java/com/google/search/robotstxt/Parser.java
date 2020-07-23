@@ -36,7 +36,7 @@ public abstract class Parser {
    *
    * @param parseHandler handler to follow during parsing process.
    */
-  public Parser(ParseHandler parseHandler) {
+  protected Parser(ParseHandler parseHandler) {
     this.parseHandler = parseHandler;
   }
 
