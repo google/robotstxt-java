@@ -14,8 +14,26 @@
 
 package com.google.search.robotstxt;
 
+/**
+ * The interface provides parsing logic for {@link Parser} class. Its implementation is expected to
+ * accumulate parsed robots.txt lines and be able to compute {@link RobotsMatcher} instance as soon
+ * as all robots.txt lines were inputted.
+ */
 public interface ParseHandler {
+  /**
+   * Directive receiver. Each directive consists of type and value.
+   *
+   * @param directiveType type of received directive
+   * @param directiveValue value of received directive
+   */
   void handleDirective(final Parser.DirectiveType directiveType, final String directiveValue);
 
+  /**
+   * Method to finalize all received via
+   * {@link this#handleDirective(Parser.DirectiveType, String)} data and produces an matcher
+   * based on it. Thus, it returns serialized view of robots.txt file with matching functionality.
+   *
+   * @return matcher representing original robots.txt file
+   */
   RobotsMatcher compute();
 }

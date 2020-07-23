@@ -14,6 +14,11 @@
 
 package com.google.search.robotstxt;
 
+/**
+ * Abstract parser. All parser implementations must extend it.
+ * This class extensions are expected to provide tokenizer logic while parsing logic is delegated
+ * to a {@link ParseHandler} class.
+ */
 public abstract class Parser {
   enum DirectiveType {
     USER_AGENT,
@@ -25,5 +30,11 @@ public abstract class Parser {
 
   private ParseHandler parseHandler;
 
+  /**
+   * Method to parse robots.txt file into a matcher.
+   *
+   * @param robotsTxtBody body of robots.txt file to parse
+   * @return matcher representing given robots.txt file
+   */
   abstract RobotsMatcher parse(final String robotsTxtBody);
 }

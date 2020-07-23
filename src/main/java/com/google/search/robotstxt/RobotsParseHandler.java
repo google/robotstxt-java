@@ -14,6 +14,9 @@
 
 package com.google.search.robotstxt;
 
+/**
+ * Implementation of parsing strategy used in robots.txt parsing.
+ */
 public class RobotsParseHandler implements ParseHandler {
   @Override
   public void handleDirective(Parser.DirectiveType directiveType, String directiveValue) {

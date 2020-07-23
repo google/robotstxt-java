@@ -14,6 +14,10 @@
 
 package com.google.search.robotstxt;
 
+/**
+ * Class implementing matching logic based on directives priorities those calculation is delegated
+ * to a {@link MatchingStrategy} class.
+ */
 public class RobotsMatcher {
 
 }
