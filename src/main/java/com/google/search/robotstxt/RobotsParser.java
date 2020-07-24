@@ -85,7 +85,7 @@ public class RobotsParser extends Parser {
   }
 
   @Override
-  RobotsMatcher parse(String robotsTxtBody) {
+  Matcher parse(String robotsTxtBody) {
     int posBegin = 0;
     int posEnd = 0;
     boolean previousWasCarriageReturn = false;

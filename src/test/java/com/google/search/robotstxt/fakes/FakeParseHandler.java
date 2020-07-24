@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.search.robotstxt;
+package com.google.search.robotstxt.fakes;
+
+import com.google.search.robotstxt.Matcher;
+import com.google.search.robotstxt.RobotsParseHandler;
 
 /**
- * Class implementing matching logic based on directives priorities those calculation is delegated
- * to a {@link MatchingStrategy} class.
+ * Parse handler that emits {@link FakeMatcher} implementation of {@link Matcher} as a result of
+ * {@link RobotsParseHandler#compute()} method. Used to verify parsing results.
  */
-public class RobotsMatcher implements Matcher {
-  private final RobotsContents robotsContents;
-
-  public RobotsMatcher(final RobotsContents robotsContents) {
-    this.robotsContents = robotsContents;
+public class FakeParseHandler extends RobotsParseHandler {
+  @Override
+  public Matcher compute() {
+    return new FakeMatcher(robotsContents);
   }
 }

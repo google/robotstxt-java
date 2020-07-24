@@ -18,7 +18,7 @@ package com.google.search.robotstxt;
  * Implementation of parsing strategy used in robots.txt parsing.
  */
 public class RobotsParseHandler implements ParseHandler {
-  private RobotsContents robotsContents;
+  protected RobotsContents robotsContents;
   private RobotsContents.Group currentGroup;
 
   @Override
@@ -28,7 +28,7 @@ public class RobotsParseHandler implements ParseHandler {
   }
 
   private void flushCompleteGroup(boolean createNew) {
-    if (currentGroup.countOfRules() > 0) {
+    if (currentGroup.getRules().size() > 0) {
       robotsContents.addGroup(currentGroup);
       if (createNew) {
         currentGroup = new RobotsContents.Group();
@@ -63,7 +63,9 @@ public class RobotsParseHandler implements ParseHandler {
       }
       case ALLOW:
       case DISALLOW: {
-        currentGroup.addRule(directiveType, directiveValue);
+        if (currentGroup.getUserAgents().size() > 0) {
+          currentGroup.addRule(directiveType, directiveValue);
+        }
         break;
       }
       case SITEMAP:
@@ -75,7 +77,7 @@ public class RobotsParseHandler implements ParseHandler {
   }
 
   @Override
-  public RobotsMatcher compute() {
+  public Matcher compute() {
     return new RobotsMatcher(robotsContents);
   }
 }

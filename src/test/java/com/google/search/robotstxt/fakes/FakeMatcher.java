@@ -12,17 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.search.robotstxt;
+package com.google.search.robotstxt.fakes;
 
-import static org.junit.Assert.assertTrue;
+import com.google.search.robotstxt.Matcher;
+import com.google.search.robotstxt.RobotsContents;
 
-import org.junit.Test;
+/**
+ * Matcher that provides direct access to robots.txt contents. Used to verify parsing results.
+ */
+public class FakeMatcher implements Matcher {
+  private RobotsContents robotsContents;
 
-/** Unit test for simple App. */
-public class AppTest {
-  /** Rigorous Test :-) */
-  @Test
-  public void shouldAnswerWithTrue() {
-    assertTrue(true);
+  public FakeMatcher(final RobotsContents robotsContents) {
+    this.robotsContents = robotsContents;
+  }
+
+  public RobotsContents getRobotsContents() {
+    return robotsContents;
   }
 }

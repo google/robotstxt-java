@@ -16,6 +16,7 @@ package com.google.search.robotstxt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Representation of robots.txt contents: multiple groups of rules.
@@ -37,6 +38,28 @@ public class RobotsContents {
         this.directiveType = directiveType;
         this.directiveValue = directiveValue;
       }
+
+      public Parser.DirectiveType getDirectiveType() {
+        return directiveType;
+      }
+
+      public String getDirectiveValue() {
+        return directiveValue;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rule rule = (Rule) o;
+        return directiveType == rule.directiveType &&
+            directiveValue.equals(rule.directiveValue);
+      }
+
+      @Override
+      public int hashCode() {
+        return Objects.hash(directiveType, directiveValue);
+      }
     }
 
     private final List<String> userAgents;
@@ -47,6 +70,11 @@ public class RobotsContents {
       rules = new ArrayList<>();
     }
 
+    public Group(final List<String> userAgents, final List<Rule> rules) {
+      this.userAgents = userAgents;
+      this.rules = rules;
+    }
+
     void addUserAgent(final String userAgent) {
       userAgents.add(userAgent);
     }
@@ -55,8 +83,12 @@ public class RobotsContents {
       rules.add(new Rule(directiveType, directiveValue));
     }
 
-    int countOfRules() {
-      return rules.size();
+    public List<String> getUserAgents() {
+      return userAgents;
+    }
+
+    public List<Rule> getRules() {
+      return rules;
     }
   }
 
@@ -66,7 +98,15 @@ public class RobotsContents {
     groups = new ArrayList<>();
   }
 
+  public RobotsContents(final List<Group> groups) {
+    this.groups = groups;
+  }
+
   void addGroup(Group group) {
     groups.add(group);
+  }
+
+  public List<Group> getGroups() {
+    return groups;
   }
 }

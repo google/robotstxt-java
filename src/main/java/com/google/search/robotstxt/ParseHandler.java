@@ -45,5 +45,5 @@ public interface ParseHandler {
    *
    * @return matcher representing original robots.txt file
    */
-  RobotsMatcher compute();
+  Matcher compute();
 }
