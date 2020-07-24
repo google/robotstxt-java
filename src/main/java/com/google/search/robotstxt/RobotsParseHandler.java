@@ -14,9 +14,7 @@
 
 package com.google.search.robotstxt;
 
-/**
- * Implementation of parsing strategy used in robots.txt parsing.
- */
+/** Implementation of parsing strategy used in robots.txt parsing. */
 public class RobotsParseHandler implements ParseHandler {
   protected RobotsContents robotsContents;
   private RobotsContents.Group currentGroup;
@@ -54,25 +52,28 @@ public class RobotsParseHandler implements ParseHandler {
   }
 
   @Override
-  public void handleDirective(final Parser.DirectiveType directiveType,
-                              final String directiveValue) {
+  public void handleDirective(
+      final Parser.DirectiveType directiveType, final String directiveValue) {
     switch (directiveType) {
-      case USER_AGENT: {
-        handleUserAgent(directiveValue);
-        break;
-      }
-      case ALLOW:
-      case DISALLOW: {
-        if (currentGroup.getUserAgents().size() > 0) {
-          currentGroup.addRule(directiveType, directiveValue);
+      case USER_AGENT:
+        {
+          handleUserAgent(directiveValue);
+          break;
         }
-        break;
-      }
+      case ALLOW:
+      case DISALLOW:
+        {
+          if (currentGroup.getUserAgents().size() > 0) {
+            currentGroup.addRule(directiveType, directiveValue);
+          }
+          break;
+        }
       case SITEMAP:
-      case UNKNOWN: {
-        // Ignored.
-        break;
-      }
+      case UNKNOWN:
+        {
+          // Ignored.
+          break;
+        }
     }
   }
 

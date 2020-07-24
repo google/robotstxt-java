@@ -14,6 +14,4 @@
 
 package com.google.search.robotstxt;
 
-public interface Matcher {
-
-}
+public interface Matcher {}

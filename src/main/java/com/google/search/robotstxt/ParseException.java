@@ -14,9 +14,7 @@
 
 package com.google.search.robotstxt;
 
-/**
- * Exception which is used in parsing process.
- */
+/** Exception which is used in parsing process. */
 public class ParseException extends Exception {
   public ParseException() {
     super();

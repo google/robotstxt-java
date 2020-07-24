@@ -14,9 +14,7 @@
 
 package com.google.search.robotstxt;
 
-/**
- * Robots.txt parser implementation.
- */
+/** Robots.txt parser implementation. */
 public class RobotsParser extends Parser {
   public RobotsParser(ParseHandler parseHandler) {
     super(parseHandler);
@@ -26,8 +24,8 @@ public class RobotsParser extends Parser {
     return c == 0x09 || c == 0x20;
   }
 
-  private static String trimBounded(final String string, final int beginBound,
-                                    final int endBound) throws ParseException {
+  private static String trimBounded(final String string, final int beginBound, final int endBound)
+      throws ParseException {
     int begin = beginBound;
     int end = endBound;
     while (begin < endBound && isWhitespace(string.charAt(begin))) {
@@ -55,8 +53,7 @@ public class RobotsParser extends Parser {
     }
   }
 
-  private void parseLine(final String robotsTxtBody, final int lineBegin,
-                                final int lineEnd) {
+  private void parseLine(final String robotsTxtBody, final int lineBegin, final int lineEnd) {
     int limit = lineEnd;
     int separator = lineEnd;
 

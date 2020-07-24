@@ -17,9 +17,7 @@ package com.google.search.robotstxt.fakes;
 import com.google.search.robotstxt.Matcher;
 import com.google.search.robotstxt.RobotsContents;
 
-/**
- * Matcher that provides direct access to robots.txt contents. Used to verify parsing results.
- */
+/** Matcher that provides direct access to robots.txt contents. Used to verify parsing results. */
 public class FakeMatcher implements Matcher {
   private RobotsContents robotsContents;
 

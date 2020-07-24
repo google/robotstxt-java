@@ -18,18 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Representation of robots.txt contents: multiple groups of rules.
- */
+/** Representation of robots.txt contents: multiple groups of rules. */
 public class RobotsContents {
   /**
-   * Representation of robots.txt group of rules: multiple user-agents to which
-   * multiple rules are applied.
+   * Representation of robots.txt group of rules: multiple user-agents to which multiple rules are
+   * applied.
    */
   static class Group {
-    /**
-     * Representation of robots.txt rule: pair of directive and value.
-     */
+    /** Representation of robots.txt rule: pair of directive and value. */
     static class Rule {
       private final Parser.DirectiveType directiveType;
       private final String directiveValue;
@@ -52,8 +48,7 @@ public class RobotsContents {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rule rule = (Rule) o;
-        return directiveType == rule.directiveType &&
-            directiveValue.equals(rule.directiveValue);
+        return directiveType == rule.directiveType && directiveValue.equals(rule.directiveValue);
       }
 
       @Override
