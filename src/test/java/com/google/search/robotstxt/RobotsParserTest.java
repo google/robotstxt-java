@@ -14,11 +14,13 @@
 
 package com.google.search.robotstxt;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.google.search.robotstxt.fakes.FakeMatcher;
 import com.google.search.robotstxt.fakes.FakeParseHandler;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -26,7 +28,7 @@ import org.junit.Test;
  *
  * @see RobotsParser
  */
-public class RobotsParserTest extends Assert {
+public class RobotsParserTest {
   /**
    * Verifies whether given rule groups contains same rules applied to same user-agents.
    *
