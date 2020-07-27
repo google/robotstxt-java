@@ -14,8 +14,7 @@
 
 package com.google.search.robotstxt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
 
 import com.google.search.robotstxt.fakes.FakeMatcher;
 import com.google.search.robotstxt.fakes.FakeParseHandler;
@@ -30,38 +29,6 @@ import org.junit.Test;
  */
 public class RobotsParserTest {
   /**
-   * Verifies whether given rule groups contains same rules applied to same user-agents.
-   *
-   * @param expected expected group
-   * @param actual group group
-   * @return {@code true} iff groups are equivalent.
-   */
-  private static boolean areEquivalentGroups(
-      final RobotsContents.Group expected, final RobotsContents.Group actual) {
-    return expected.getUserAgents().size() == actual.getUserAgents().size()
-        && expected.getRules().size() == actual.getRules().size()
-        && actual.getUserAgents().containsAll(expected.getUserAgents())
-        && actual.getRules().containsAll(expected.getRules());
-  }
-
-  /**
-   * Verifies whether given robots.txt representations contain equivalent rule groups.
-   *
-   * @param expected expected robots.txt contents
-   * @param actual actual robots.txt contents
-   */
-  private static void validateContents(final RobotsContents expected, final RobotsContents actual) {
-    assertEquals(expected.getGroups().size(), actual.getGroups().size());
-    expected
-        .getGroups()
-        .forEach(
-            expectedGroup ->
-                assertTrue(
-                    actual.getGroups().stream()
-                        .anyMatch(actualGroup -> areEquivalentGroups(expectedGroup, actualGroup))));
-  }
-
-  /**
    * Parses given robots.txt contents via {@link RobotsParser} and compares the result with an
    * expected one.
    *
@@ -74,7 +41,9 @@ public class RobotsParserTest {
     FakeMatcher matcher = (FakeMatcher) parser.parse(robotsTxtBody);
     RobotsContents actualContents = matcher.getRobotsContents();
 
-    validateContents(expectedContents, actualContents);
+    expectedContents
+        .getGroups()
+        .forEach(expectedGroup -> assertThat(expectedGroup).isIn(actualContents.getGroups()));
   }
 
   /** Verifies: rules grouping, rules parsing, invalid directives ignorance. */

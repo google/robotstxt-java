@@ -85,6 +85,22 @@ public class RobotsContents {
     public List<Rule> getRules() {
       return rules;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Group group = (Group) o;
+      return getUserAgents().size() == group.getUserAgents().size()
+          && getRules().size() == group.getRules().size()
+          && getUserAgents().containsAll(group.getUserAgents())
+          && getRules().containsAll(group.getRules());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(userAgents, rules);
+    }
   }
 
   private final List<Group> groups;
