@@ -22,18 +22,18 @@ public interface MatchingStrategy {
   /**
    * Calculates priority of ALLOW verdict based on given directive.
    *
-   * @param targetUrl URL to calculate ALLOW match priority against
-   * @param directiveValue ALLOW directive value
+   * @param path URL to calculate ALLOW match priority against
+   * @param pattern ALLOW directive value
    * @return match priority (higher value means higher chance of ALLOW verdict)
    */
-  int matchAllowPriority(final String targetUrl, final String directiveValue);
+  int matchAllowPriority(final String path, final String pattern);
 
   /**
    * Calculates priority of DISALLOW verdict based on given directive.
    *
-   * @param targetUrl URL to calculate DISALLOW match priority against
-   * @param directiveValue DISALLOW directive value
+   * @param path URL to calculate DISALLOW match priority against
+   * @param pattern DISALLOW directive value
    * @return match priority (higher value means higher chance of DISALLOW verdict)
    */
-  int matchDisallowPriority(final String targetUrl, final String directiveValue);
+  int matchDisallowPriority(final String path, final String pattern);
 }

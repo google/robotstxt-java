@@ -19,13 +19,60 @@ package com.google.search.robotstxt;
  * strategy.
  */
 public class RobotsLongestMatchStrategy implements MatchingStrategy {
-  @Override
-  public int matchAllowPriority(String targetUrl, String directiveValue) {
-    return 0;
+  /**
+   * Checks whether the given path may be matched to the given pattern. Treats '*' as a wildcard and
+   * '$' as a termination symbol iff it is in the end of pattern.
+   *
+   * @param path path to match
+   * @param pattern pattern to match to
+   * @return {@code true} iff given path matches given pattern
+   */
+  private static boolean matches(final String path, final String pattern) {
+    // Prefixes list stores indexes of path prefixes those match i-th prefix of pattern, in
+    // ascending order.
+    final int[] prefixes = new int[path.length() + 1];
+    prefixes[0] = 0;
+    int prefixesCount = 1;
+
+    for (int i = 0; i < pattern.length(); i++) {
+      final char ch = pattern.charAt(i);
+
+      // '$' in the end of pattern indicates its termination.
+      if (ch == '$' && i + 1 == pattern.length()) {
+        return prefixes[prefixesCount - 1] == path.length();
+      }
+
+      // In case of '*' occurrence all path prefixes starting from the shortest one may be matched.
+      if (ch == '*') {
+        prefixesCount = path.length() - prefixes[0] + 1;
+        for (int j = 1; j < prefixesCount; j++) {
+          prefixes[j] = prefixes[j - 1] + 1;
+        }
+      } else {
+        // Iterate over each previous prefix and try to extend by one character.
+        int newPrefixesCount = 0;
+        for (int j = 0; j < prefixesCount; j++) {
+          if (prefixes[j] < path.length() && path.charAt(prefixes[j]) == ch) {
+            prefixes[newPrefixesCount++] = prefixes[j] + 1;
+          }
+        }
+        if (newPrefixesCount == 0) {
+          return false;
+        }
+        prefixesCount = newPrefixesCount;
+      }
+    }
+
+    return true;
   }
 
   @Override
-  public int matchDisallowPriority(String targetUrl, String directiveValue) {
-    return 0;
+  public int matchAllowPriority(String path, String pattern) {
+    return matches(path, pattern) ? pattern.length() : -1;
+  }
+
+  @Override
+  public int matchDisallowPriority(String path, String pattern) {
+    return matches(path, pattern) ? pattern.length() : -1;
   }
 }

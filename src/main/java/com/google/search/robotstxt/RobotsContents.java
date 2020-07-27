@@ -59,6 +59,7 @@ public class RobotsContents {
 
     private final List<String> userAgents;
     private final List<Rule> rules;
+    private boolean global = false;
 
     Group() {
       userAgents = new ArrayList<>();
@@ -71,7 +72,11 @@ public class RobotsContents {
     }
 
     void addUserAgent(final String userAgent) {
-      userAgents.add(userAgent);
+      if (userAgent.trim().equals("*")) {
+        global = true;
+      } else {
+        userAgents.add(userAgent);
+      }
     }
 
     void addRule(final Parser.DirectiveType directiveType, final String directiveValue) {
@@ -84,6 +89,10 @@ public class RobotsContents {
 
     public List<Rule> getRules() {
       return rules;
+    }
+
+    public boolean isGlobal() {
+      return global;
     }
 
     @Override
