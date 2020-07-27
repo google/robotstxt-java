@@ -35,9 +35,9 @@ public interface ParseHandler {
   void handleDirective(final Parser.DirectiveType directiveType, final String directiveValue);
 
   /**
-   * Method to finalize all received via {@link this#handleDirective(Parser.DirectiveType, String)}
-   * data and produces an matcher based on it. Thus, it returns serialized view of robots.txt file
-   * with matching functionality.
+   * Calling this method produces a matcher based on all earlier received information via {@link
+   * this#handleDirective(Parser.DirectiveType, String)} method. Thus, it returns serialized view of
+   * robots.txt file with matching functionality.
    *
    * @return matcher representing original robots.txt file
    */
