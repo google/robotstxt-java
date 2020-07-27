@@ -25,7 +25,7 @@ public class RobotsParser extends Parser {
   }
 
   private static boolean isWhitespace(final char ch) {
-    return ch == 0x09 || ch == 0x20;
+    return ch == ' ' || ch == '\t';
   }
 
   private static String trimBounded(final String string, final int beginBound, final int endBound)
