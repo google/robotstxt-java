@@ -28,14 +28,24 @@ public class RobotsParser extends Parser {
     return ch == ' ' || ch == '\t';
   }
 
-  private static String trimBounded(final String string, final int beginBound, final int endBound)
+  /**
+   * Extracts substring between given indexes and trims preceding and succeeding whitespace
+   * characters.
+   *
+   * @param string string to extract from
+   * @param beginIndex the beginning index, inclusive
+   * @param endIndex the ending index, exclusive
+   * @return extracted substring with trimmed whitespaces
+   * @throws ParseException if there are only whitespace characters between given indexes
+   */
+  private static String trimBounded(final String string, final int beginIndex, final int endIndex)
       throws ParseException {
-    int begin = beginBound;
-    int end = endBound;
-    while (begin < endBound && isWhitespace(string.charAt(begin))) {
+    int begin = beginIndex;
+    int end = endIndex;
+    while (begin < endIndex && isWhitespace(string.charAt(begin))) {
       begin++;
     }
-    while (end > beginBound && isWhitespace(string.charAt(end - 1))) {
+    while (end > beginIndex && isWhitespace(string.charAt(end - 1))) {
       end--;
     }
     if (begin >= end) {
