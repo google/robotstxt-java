@@ -134,6 +134,8 @@ public class RobotsParser extends Parser {
 
     parseHandler.handleStart();
 
+    // Iteration over characters is preferred over utilities that split text into lines to avoid
+    // having to create additional Strings and comply with line breaking defined in standard.
     for (int i = 0; i < robotsTxtBody.length(); i++) {
       final char ch = robotsTxtBody.charAt(i);
 
