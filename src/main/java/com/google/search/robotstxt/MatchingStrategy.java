@@ -33,7 +33,7 @@ public interface MatchingStrategy {
    *
    * @param targetUrl URL to calculate DISALLOW match priority against
    * @param directiveValue DISALLOW directive value
-   * @return match priority (higher value means higher chance of ALLOW verdict)
+   * @return match priority (higher value means higher chance of DISALLOW verdict)
    */
   int matchDisallowPriority(final String targetUrl, final String directiveValue);
 }
