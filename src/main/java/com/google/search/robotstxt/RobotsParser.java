@@ -127,14 +127,14 @@ public class RobotsParser extends Parser {
     for (int i = 0; i < robotsTxtBody.length(); i++) {
       final char ch = robotsTxtBody.charAt(i);
 
-      if (ch != 0x0A && ch != 0x0D) {
+      if (ch != '\n' && ch != '\r') {
         posEnd++;
       } else {
-        if (posBegin != posEnd || !previousWasCarriageReturn || ch != 0x0A) {
+        if (posBegin != posEnd || !previousWasCarriageReturn || ch != '\n') {
           parseLine(robotsTxtBody, posBegin, posEnd, ++lineNumber);
         }
         posBegin = posEnd = i + 1;
-        previousWasCarriageReturn = ch == 0x0D;
+        previousWasCarriageReturn = ch == '\r';
       }
     }
 

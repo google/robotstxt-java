@@ -173,7 +173,7 @@ public class RobotsParserTest extends Assert {
     parseAndValidate(robotsTxtBody, expectedContents);
   }
 
-  /** Verifies: surrounding whitespace characters (0x0A, 0x20) ignorance. */
+  /** Verifies: surrounding whitespace characters (LF, CR) ignorance. */
   @Test
   public void testWhitespaces() {
     final String robotsTxtBody =
