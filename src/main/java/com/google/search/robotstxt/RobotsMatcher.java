@@ -81,7 +81,10 @@ public class RobotsMatcher implements Matcher {
 
     for (RobotsContents.Group group : robotsContents.getGroups()) {
       final boolean isSpecificGroup =
-          userAgents.stream().anyMatch(userAgent -> group.getUserAgents().contains(userAgent));
+          userAgents.stream()
+              .anyMatch(
+                  userAgent ->
+                      group.getUserAgents().stream().anyMatch(userAgent::equalsIgnoreCase));
       if (!isSpecificGroup && (ignoreGlobal || !group.isGlobal())) {
         continue;
       }
