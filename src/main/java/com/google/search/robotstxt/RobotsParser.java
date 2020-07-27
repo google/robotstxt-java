@@ -14,14 +14,18 @@
 
 package com.google.search.robotstxt;
 
+import com.google.common.flogger.FluentLogger;
+
 /** Robots.txt parser implementation. */
 public class RobotsParser extends Parser {
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
   public RobotsParser(ParseHandler parseHandler) {
     super(parseHandler);
   }
 
-  private static boolean isWhitespace(final char c) {
-    return c == 0x09 || c == 0x20;
+  private static boolean isWhitespace(final char ch) {
+    return ch == 0x09 || ch == 0x20;
   }
 
   private static String trimBounded(final String string, final int beginBound, final int endBound)
@@ -53,38 +57,69 @@ public class RobotsParser extends Parser {
     }
   }
 
-  private void parseLine(final String robotsTxtBody, final int lineBegin, final int lineEnd) {
+  private static void logWarning(
+      final String message,
+      final String robotsTxtBody,
+      final int lineBegin,
+      final int lineEnd,
+      final int lineNumber) {
+    logger.atWarning().log(
+        message + "%nAt line %d:%n\t" + robotsTxtBody.substring(lineBegin, lineEnd), lineNumber);
+  }
+
+  private void parseLine(
+      final String robotsTxtBody, final int lineBegin, final int lineEnd, final int lineNumber) {
     int limit = lineEnd;
     int separator = lineEnd;
+    boolean hasContents = false;
 
     for (int i = lineBegin; i < lineEnd; i++) {
-      if (separator == lineEnd && robotsTxtBody.charAt(i) == ':') {
+      final char ch = robotsTxtBody.charAt(i);
+      if (!isWhitespace(ch)) {
+        hasContents = true;
+      }
+      if (separator == lineEnd && ch == ':') {
         separator = i;
       }
-      if (robotsTxtBody.charAt(i) == '#') {
+      if (ch == '#') {
         limit = i;
         break;
       }
     }
 
     if (separator == lineEnd) {
+      if (hasContents) {
+        logWarning("No separator found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      }
       return;
     }
 
+    final String key;
     try {
-      final String key = trimBounded(robotsTxtBody, lineBegin, separator);
-      final DirectiveType directiveType = parseDirective(key);
-      final String value = trimBounded(robotsTxtBody, separator + 1, limit);
-      parseHandler.handleDirective(directiveType, value);
+      key = trimBounded(robotsTxtBody, lineBegin, separator);
     } catch (ParseException e) {
-      // Ignored.
+      logWarning("No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      return;
     }
+    final String value;
+    try {
+      value = trimBounded(robotsTxtBody, separator + 1, limit);
+    } catch (ParseException e) {
+      logWarning("No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      return;
+    }
+    final DirectiveType directiveType = parseDirective(key);
+    if (directiveType == DirectiveType.UNKNOWN) {
+      logWarning("Unknown key.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+    }
+    parseHandler.handleDirective(directiveType, value);
   }
 
   @Override
   Matcher parse(String robotsTxtBody) {
     int posBegin = 0;
     int posEnd = 0;
+    int lineNumber = 0;
     boolean previousWasCarriageReturn = false;
 
     parseHandler.handleStart();
@@ -96,7 +131,7 @@ public class RobotsParser extends Parser {
         posEnd++;
       } else {
         if (posBegin != posEnd || !previousWasCarriageReturn || ch != 0x0A) {
-          parseLine(robotsTxtBody, posBegin, posEnd);
+          parseLine(robotsTxtBody, posBegin, posEnd, ++lineNumber);
         }
         posBegin = posEnd = i + 1;
         previousWasCarriageReturn = ch == 0x0D;
