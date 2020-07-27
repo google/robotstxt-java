@@ -15,14 +15,14 @@
 package com.google.search.robotstxt;
 
 /**
- * Provides methods to calculate match priority for given directives against given URL. It is
+ * Provides methods to calculate match priority for given directives against given path. It is
  * required to compute match verdict in {@link RobotsMatcher}.
  */
 public interface MatchingStrategy {
   /**
    * Calculates priority of ALLOW verdict based on given directive.
    *
-   * @param path URL to calculate ALLOW match priority against
+   * @param path path to calculate ALLOW match priority against
    * @param pattern ALLOW directive value
    * @return match priority (higher value means higher chance of ALLOW verdict)
    */
@@ -31,7 +31,7 @@ public interface MatchingStrategy {
   /**
    * Calculates priority of DISALLOW verdict based on given directive.
    *
-   * @param path URL to calculate DISALLOW match priority against
+   * @param path path to calculate DISALLOW match priority against
    * @param pattern DISALLOW directive value
    * @return match priority (higher value means higher chance of DISALLOW verdict)
    */

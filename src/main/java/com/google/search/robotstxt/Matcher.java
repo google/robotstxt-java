@@ -14,4 +14,8 @@
 
 package com.google.search.robotstxt;
 
+/**
+ * Interface created to add flexibility in return value of {@link ParseHandler#compute()} method.
+ * Created for testing purposes.
+ */
 public interface Matcher {}
