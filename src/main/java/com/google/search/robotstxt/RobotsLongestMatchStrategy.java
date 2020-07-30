@@ -28,8 +28,10 @@ public class RobotsLongestMatchStrategy implements MatchingStrategy {
    * @return {@code true} iff given path matches given pattern
    */
   private static boolean matches(final String path, final String pattern) {
-    // Prefixes list stores indexes of path prefixes those match i-th prefix of pattern, in
-    // ascending order.
+    // "Prefixes" array stores "path" prefixes that match specific prefix of "pattern".
+    // Prefixes of "pattern" are iterated over in ascending order in the loop below.
+    // Each prefix is represented by its end index (exclusive), the array stores them in ascending
+    // order.
     final int[] prefixes = new int[path.length() + 1];
     prefixes[0] = 0;
     int prefixesCount = 1;
