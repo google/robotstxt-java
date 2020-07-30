@@ -100,10 +100,7 @@ public class RobotsContents {
       if (this == obj) return true;
       if (obj == null || getClass() != obj.getClass()) return false;
       Group other = (Group) obj;
-      return getUserAgents().size() == other.getUserAgents().size()
-          && getRules().size() == other.getRules().size()
-          && getUserAgents().containsAll(other.getUserAgents())
-          && getRules().containsAll(other.getRules());
+      return userAgents.equals(other.userAgents) && rules.equals(other.rules);
     }
 
     @Override
