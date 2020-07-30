@@ -73,8 +73,8 @@ public class RobotsParser extends Parser {
       final int lineBegin,
       final int lineEnd,
       final int lineNumber) {
-    logger.atWarning().log(
-        message + "%nAt line %d:%n\t" + robotsTxtBody.substring(lineBegin, lineEnd), lineNumber);
+    logger.atWarning().log("%s%nAt line %d:%n%s\t", message, lineNumber,
+        robotsTxtBody.substring(lineBegin, lineEnd));
   }
 
   private void parseLine(
