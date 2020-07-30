@@ -44,11 +44,11 @@ public class RobotsContents {
       }
 
       @Override
-      public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Rule rule = (Rule) o;
-        return directiveType == rule.directiveType && directiveValue.equals(rule.directiveValue);
+      public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Rule other = (Rule) obj;
+        return directiveType == other.directiveType && directiveValue.equals(other.directiveValue);
       }
 
       @Override
@@ -96,14 +96,14 @@ public class RobotsContents {
     }
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      Group group = (Group) o;
-      return getUserAgents().size() == group.getUserAgents().size()
-          && getRules().size() == group.getRules().size()
-          && getUserAgents().containsAll(group.getUserAgents())
-          && getRules().containsAll(group.getRules());
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null || getClass() != obj.getClass()) return false;
+      Group other = (Group) obj;
+      return getUserAgents().size() == other.getUserAgents().size()
+          && getRules().size() == other.getRules().size()
+          && getUserAgents().containsAll(other.getUserAgents())
+          && getRules().containsAll(other.getRules());
     }
 
     @Override
