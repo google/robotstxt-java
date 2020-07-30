@@ -27,7 +27,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: parsing an matching robots.txt containing single group */
   @Test
-  public void singeGroup() {
+  public void singleGroup() {
     final String robotsTxtBodyCorrect = "user-agent: FooBot\n" + "disallow: /\n";
     final String robotsTxtBodyIncorrect = "foo: FooBot\n" + "bar: /\n";
 
