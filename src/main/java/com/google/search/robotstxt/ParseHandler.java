@@ -20,14 +20,15 @@ package com.google.search.robotstxt;
  * as all robots.txt lines were inputted.
  */
 public interface ParseHandler {
-  /** Handler for the beginning of parsing process. */
+  /** Handler for the beginning of parsing process. This method must be called single time before any other
+   * method of this class.
+   */
   void handleStart();
 
-  /** Handler for the end of parsing process. */
-  void handleEnd();
-
   /**
-   * Directive receiver. Each directive consists of type and value.
+   * Directive receiver. Each directive consists of type and value. This method must be called
+   * after {@link this#handleStart()} and must not be called after {@link this#handleEnd()}. May be
+   * called multiple times.
    *
    * @param directiveType type of received directive
    * @param directiveValue value of received directive
@@ -35,9 +36,16 @@ public interface ParseHandler {
   void handleDirective(final Parser.DirectiveType directiveType, final String directiveValue);
 
   /**
+   * Handler for the end of parsing process. This method must be called single time after
+   * {@link this#handleStart()} or {@link this#handleDirective(Parser.DirectiveType, String)}.
+   */
+  void handleEnd();
+
+  /**
    * Calling this method produces a matcher based on all earlier received information via {@link
    * this#handleDirective(Parser.DirectiveType, String)} method. Thus, it returns serialized view of
-   * robots.txt file with matching functionality.
+   * robots.txt file with matching functionality. This method must be called after
+   * {@link this#handleEnd()}. May be called multiple times.
    *
    * @return matcher representing original robots.txt file
    */
