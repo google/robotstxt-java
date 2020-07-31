@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
-
 import picocli.CommandLine;
 
 /**
@@ -55,7 +54,7 @@ public class RobotsParserApp implements Callable<Integer> {
 
   /** Interested user-agents. */
   @CommandLine.Option(
-      names = {"-a", "--agents"},
+      names = {"-a", "--agent"},
       required = true)
   private List<String> agents;
 
