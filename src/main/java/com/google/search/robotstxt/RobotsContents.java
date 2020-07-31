@@ -15,8 +15,10 @@
 package com.google.search.robotstxt;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /** Representation of robots.txt contents: multiple groups of rules. */
 public class RobotsContents {
@@ -58,18 +60,18 @@ public class RobotsContents {
       }
     }
 
-    private final List<String> userAgents;
-    private final List<Rule> rules;
+    private final Set<String> userAgents;
+    private final Set<Rule> rules;
     private boolean global = false;
 
     Group() {
-      userAgents = new ArrayList<>();
-      rules = new ArrayList<>();
+      userAgents = new HashSet<>();
+      rules = new HashSet<>();
     }
 
     public Group(final List<String> userAgents, final List<Rule> rules) {
-      this.userAgents = userAgents;
-      this.rules = rules;
+      this.userAgents = new HashSet<>(userAgents);
+      this.rules = new HashSet<>(rules);
     }
 
     void addUserAgent(final String userAgent) {
@@ -84,11 +86,11 @@ public class RobotsContents {
       rules.add(new Rule(directiveType, directiveValue));
     }
 
-    public List<String> getUserAgents() {
+    public Set<String> getUserAgents() {
       return userAgents;
     }
 
-    public List<Rule> getRules() {
+    public Set<Rule> getRules() {
       return rules;
     }
 
