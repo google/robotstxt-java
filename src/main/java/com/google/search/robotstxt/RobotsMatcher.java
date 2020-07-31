@@ -56,6 +56,11 @@ public class RobotsMatcher implements Matcher {
     this.robotsContents = robotsContents;
   }
 
+  /** Used to extract contents for testing purposes. */
+  RobotsContents getRobotsContents() {
+    return robotsContents;
+  }
+
   private static String getPath(final String url) throws MatchException {
     try {
       return new URL(url).getPath();
@@ -146,15 +151,7 @@ public class RobotsMatcher implements Matcher {
     return true;
   }
 
-  /**
-   * Check whether at least one of given user agents is allowed to visit given URL based on
-   * robots.txt which this matcher represents.
-   *
-   * @param userAgents interested user agents
-   * @param url target URL
-   * @return {@code true} iff verdict is ALLOWED
-   * @throws MatchException when given URL is malformed
-   */
+  @Override
   public boolean allowedByRobots(final List<String> userAgents, final String url)
       throws MatchException {
     final String path = getPath(url);
@@ -162,29 +159,13 @@ public class RobotsMatcher implements Matcher {
     return allowVerdict(matches.getKey(), matches.getValue());
   }
 
-  /**
-   * Check whether given user agent is allowed to visit given URL based on robots.txt which this
-   * matcher represents.
-   *
-   * @param userAgent interested user agent
-   * @param url target URL
-   * @return {@code true} iff verdict is ALLOWED
-   * @throws MatchException when given URL is malformed
-   */
+  @Override
   public boolean singleAgentAllowedByRobots(final String userAgent, final String url)
       throws MatchException {
     return allowedByRobots(Collections.singletonList(userAgent), url);
   }
 
-  /**
-   * Check whether at least one of given user agents is allowed to visit given URL based on
-   * robots.txt which this matcher represents. All global rule groups are ignored.
-   *
-   * @param userAgents interested user agents
-   * @param url target URL
-   * @return {@code true} iff verdict is ALLOWED
-   * @throws MatchException when given URL is malformed
-   */
+  @Override
   public boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url)
       throws MatchException {
     final String path = getPath(url);

@@ -14,8 +14,42 @@
 
 package com.google.search.robotstxt;
 
-/**
- * Interface created to add flexibility in return value of {@link ParseHandler#compute()} method.
- * Created for testing purposes.
- */
-public interface Matcher {}
+import java.util.List;
+
+/** Interface of a matcher class. */
+public interface Matcher {
+  /**
+   * Check whether at least one of given user agents is allowed to visit given URL based on
+   * robots.txt which this matcher represents.
+   *
+   * @param userAgents interested user agents
+   * @param url target URL
+   * @return {@code true} iff verdict is ALLOWED
+   * @throws MatchException when given URL is malformed
+   */
+  boolean allowedByRobots(final List<String> userAgents, final String url) throws MatchException;
+
+  /**
+   * Check whether given user agent is allowed to visit given URL based on robots.txt which this
+   * matcher represents.
+   *
+   * @param userAgent interested user agent
+   * @param url target URL
+   * @return {@code true} iff verdict is ALLOWED
+   * @throws MatchException when given URL is malformed
+   */
+  boolean singleAgentAllowedByRobots(final String userAgent, final String url)
+      throws MatchException;
+
+  /**
+   * Check whether at least one of given user agents is allowed to visit given URL based on
+   * robots.txt which this matcher represents. All global rule groups are ignored.
+   *
+   * @param userAgents interested user agents
+   * @param url target URL
+   * @return {@code true} iff verdict is ALLOWED
+   * @throws MatchException when given URL is malformed
+   */
+  boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url)
+      throws MatchException;
+}

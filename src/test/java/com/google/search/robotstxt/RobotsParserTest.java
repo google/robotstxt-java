@@ -16,8 +16,6 @@ package com.google.search.robotstxt;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.google.search.robotstxt.fakes.FakeMatcher;
-import com.google.search.robotstxt.fakes.FakeParseHandler;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -37,9 +35,9 @@ public class RobotsParserTest {
    */
   private static void parseAndValidate(
       final String robotsTxtBody, final RobotsContents expectedContents) {
-    Parser parser = new RobotsParser(new FakeParseHandler());
-    FakeMatcher matcher = (FakeMatcher) parser.parse(robotsTxtBody);
-    RobotsContents actualContents = matcher.getRobotsContents();
+    Parser parser = new RobotsParser(new RobotsParseHandler());
+    Matcher matcher = parser.parse(robotsTxtBody);
+    RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents
         .getGroups()
