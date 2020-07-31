@@ -14,6 +14,10 @@
 
 package com.google.search.robotstxt;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
@@ -39,11 +43,11 @@ public class RobotsParserApp implements Callable<Integer> {
     System.exit(exitCode);
   }
 
-  /** robots.txt contents. */
+  /** robots.txt file path. */
   @CommandLine.Option(
-      names = {"-r", "--robotstxt"},
+      names = {"-f", "--file"},
       required = true)
-  private String robotsTxtContents;
+  private String robotsTxtPath;
 
   /** Interested user-agents. */
   @CommandLine.Option(
@@ -58,13 +62,20 @@ public class RobotsParserApp implements Callable<Integer> {
   private String url;
 
   /**
-   * Parses given robots.txt contents and performs matching process.
+   * Parses given robots.txt file and performs matching process.
    *
    * @return {@code 0} if any of user-agents is allowed to crawl given URL and {@code 1} otherwise.
    * @throws MatchException if exception occurred during matching process.
    */
   @Override
-  public Integer call() throws MatchException {
+  public Integer call() throws ParseException, MatchException {
+    final String robotsTxtContents;
+    try {
+      robotsTxtContents = Files.readString(Path.of(robotsTxtPath));
+    } catch (final IOException | InvalidPathException e) {
+      throw new ParseException("Failed to read robots.txt file.", e);
+    }
+
     final Parser parser = new RobotsParser(new RobotsParseHandler());
     final RobotsMatcher matcher = (RobotsMatcher) parser.parse(robotsTxtContents);
 
