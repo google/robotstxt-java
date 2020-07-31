@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
+/**
+ * Console application for parsing robots.txt and matching URLs against it.
+ *
+ * @see Parser
+ * @see Matcher
+ */
 @CommandLine.Command(
     name = "robotsParser",
     description =
