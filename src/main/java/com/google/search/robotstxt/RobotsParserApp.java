@@ -14,11 +14,15 @@
 
 package com.google.search.robotstxt;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 
@@ -44,9 +48,7 @@ public class RobotsParserApp implements Callable<Integer> {
   }
 
   /** robots.txt file path. */
-  @CommandLine.Option(
-      names = {"-f", "--file"},
-      required = true)
+  @CommandLine.Option(names = {"-f", "--file"})
   private String robotsTxtPath;
 
   /** Interested user-agents. */
@@ -61,6 +63,23 @@ public class RobotsParserApp implements Callable<Integer> {
       required = true)
   private String url;
 
+  private String readRobotsTxt() throws ParseException {
+    try {
+      if (Objects.isNull(robotsTxtPath)) {
+        // Reading from stdin
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        final StringBuilder stringBuilder = new StringBuilder();
+        bufferedReader.lines().forEach(stringBuilder::append);
+        return stringBuilder.toString();
+      } else {
+        // Reading from file
+        return Files.readString(Path.of(robotsTxtPath));
+      }
+    } catch (final UncheckedIOException | IOException | InvalidPathException e) {
+      throw new ParseException("Failed to read robots.txt file.", e);
+    }
+  }
+
   /**
    * Parses given robots.txt file and performs matching process.
    *
@@ -69,12 +88,7 @@ public class RobotsParserApp implements Callable<Integer> {
    */
   @Override
   public Integer call() throws ParseException, MatchException {
-    final String robotsTxtContents;
-    try {
-      robotsTxtContents = Files.readString(Path.of(robotsTxtPath));
-    } catch (final IOException | InvalidPathException e) {
-      throw new ParseException("Failed to read robots.txt file.", e);
-    }
+    final String robotsTxtContents = readRobotsTxt();
 
     final Parser parser = new RobotsParser(new RobotsParseHandler());
     final RobotsMatcher matcher = (RobotsMatcher) parser.parse(robotsTxtContents);
