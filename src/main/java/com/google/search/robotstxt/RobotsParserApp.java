@@ -24,6 +24,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
 import picocli.CommandLine;
 
 /**
@@ -68,9 +70,7 @@ public class RobotsParserApp implements Callable<Integer> {
       if (Objects.isNull(robotsTxtPath)) {
         // Reading from stdin
         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        final StringBuilder stringBuilder = new StringBuilder();
-        bufferedReader.lines().forEach(stringBuilder::append);
-        return stringBuilder.toString();
+        return bufferedReader.lines().collect(Collectors.joining("\n", "", "\n"));
       } else {
         // Reading from file
         return Files.readString(Path.of(robotsTxtPath));
