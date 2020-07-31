@@ -30,8 +30,7 @@ import picocli.CommandLine;
         "Parses and matches given agents against given robots.txt to determine "
             + "whether any agent is allowed to visit given URL.",
     exitCodeOnExecutionException = 2,
-    exitCodeOnInvalidInput = 3
-)
+    exitCodeOnInvalidInput = 3)
 public class RobotsParserApp implements Callable<Integer> {
   public RobotsParserApp() {}
 
