@@ -37,21 +37,30 @@ public class RobotsParserApp implements Callable<Integer> {
     System.exit(exitCode);
   }
 
+  /** robots.txt contents. */
   @CommandLine.Option(
       names = {"-r", "--robotstxt"},
       required = true)
   private String robotsTxtContents;
 
+  /** Interested user-agents. */
   @CommandLine.Option(
       names = {"-a", "--agents"},
       required = true)
   private List<String> agents;
 
+  /** Target URL to match. */
   @CommandLine.Option(
       names = {"-u", "--url"},
       required = true)
   private String url;
 
+  /**
+   * Parses given robots.txt contents and performs matching process.
+   *
+   * @return {@code 0} if any of user-agents is allowed to crawl given URL and {@code 1} otherwise.
+   * @throws MatchException if exception occurred during matching process.
+   */
   @Override
   public Integer call() throws MatchException {
     final Parser parser = new RobotsParser(new RobotsParseHandler());

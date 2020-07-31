@@ -48,7 +48,8 @@ public class RobotsContents {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Rule other = (Rule) obj;
-        return Objects.equals(directiveType, other.directiveType) && Objects.equals(directiveValue, other.directiveValue);
+        return Objects.equals(directiveType, other.directiveType)
+            && Objects.equals(directiveValue, other.directiveValue);
       }
 
       @Override
