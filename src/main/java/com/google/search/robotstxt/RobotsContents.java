@@ -48,7 +48,7 @@ public class RobotsContents {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Rule other = (Rule) obj;
-        return directiveType == other.directiveType && directiveValue.equals(other.directiveValue);
+        return Objects.equals(directiveType, other.directiveType) && Objects.equals(directiveValue, other.directiveValue);
       }
 
       @Override
@@ -100,7 +100,7 @@ public class RobotsContents {
       if (this == obj) return true;
       if (obj == null || getClass() != obj.getClass()) return false;
       Group other = (Group) obj;
-      return userAgents.equals(other.userAgents) && rules.equals(other.rules);
+      return Objects.equals(userAgents, other.userAgents) && Objects.equals(rules, other.rules);
     }
 
     @Override
