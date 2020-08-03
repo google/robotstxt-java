@@ -17,18 +17,6 @@ You can also install it like this if your Linux supports it:
 $ sudo apt-get install maven
 ```
 
-You will also need to have the
-[protocol buffer](https://developers.google.com/protocol-buffers/) compiler
-([protoc](https://github.com/protocolbuffers/protobuf)) installed.
-Get [the latest](https://github.com/protocolbuffers/protobuf/releases/latest)
-for your platform (i.e. `protoc-x.x.x-win64.zip`, `protoc-x.x.x-osx-x86_64.zip`).
-
-You can also install it like this if your Linux supports it:
-
-```
-$ sudo apt-get install protobuf-compiler
-```
-
 ### Build it
 
 Standard maven commands work here.
@@ -46,7 +34,7 @@ $ mvn clean install
 ### Run it
 
 ```
-$ mvn exec:java -Dexec.mainClass="com.google.search.robotstxt.App" -Dexec.args="arg0 arg1"
+$ mvn exec:java -Dexec.mainClass=com.google.search.robotstxt.RobotsParserApp -Dexec.args="--agent FooBot --url http://foo.com/bar"
 ```
 
 ## Source Code Headers
