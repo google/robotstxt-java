@@ -97,11 +97,6 @@ local.properties
 .scala_dependencies
 .worksheet
 
-# Uncomment this line if you wish to ignore the project description file.
-# Typically, this file would be tracked if it contains build/dependency configurations:
-.project
-
-
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -148,6 +143,10 @@ cmake-build-*/
 
 # IntelliJ
 out/
+.idea/encodings.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/codeStyles/codeStyleConfig.xml
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

@@ -14,15 +14,13 @@
 
 package com.google.search.robotstxt;
 
-import static org.junit.Assert.assertTrue;
+/** Used in parsing process. */
+public class ParseException extends Exception {
+  public ParseException() {
+    super();
+  }
 
-import org.junit.Test;
-
-/** Unit test for simple App. */
-public class AppTest {
-  /** Rigorous Test :-) */
-  @Test
-  public void shouldAnswerWithTrue() {
-    assertTrue(true);
+  public ParseException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

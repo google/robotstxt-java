@@ -14,14 +14,9 @@
 
 package com.google.search.robotstxt;
 
-import com.google.search.robotstxt.example.ExampleProtos.Example;
-
-/** Hello world! */
-public class App {
-  public static void main(String[] args) {
-    System.out.println("Hello World!");
-    Example aProto = Example.newBuilder().setSomeField("Hello World!").addSomeRepeated(42).build();
-
-    System.out.println("My proto:\n" + aProto);
+/** Used in matching process */
+public class MatchException extends Exception {
+  public MatchException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

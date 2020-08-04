@@ -17,18 +17,6 @@ You can also install it like this if your Linux supports it:
 $ sudo apt-get install maven
 ```
 
-You will also need to have the
-[protocol buffer](https://developers.google.com/protocol-buffers/) compiler
-([protoc](https://github.com/protocolbuffers/protobuf)) installed.
-Get [the latest](https://github.com/protocolbuffers/protobuf/releases/latest)
-for your platform (i.e. `protoc-x.x.x-win64.zip`, `protoc-x.x.x-osx-x86_64.zip`).
-
-You can also install it like this if your Linux supports it:
-
-```
-$ sudo apt-get install protobuf-compiler
-```
-
 ### Build it
 
 Standard maven commands work here.
@@ -45,8 +33,24 @@ $ mvn clean install
 
 ### Run it
 
+Following commands will run an application that parses given robots.txt file and print a matching
+verdict: `ALLOWED` or `DISALLOWED` (exit codes are `0` and `1` respectively). 
+
+You should provide a target URL using `-u` (`--url`) flag. At least one agent must be specified
+using `-a` (`--agent`) flag (verdict `DISALLOWED` is printed iff none of the user-agents is allowed
+to crawl given URL).
+
+When flag `-f` (`--file`) is omitted, robots.txt contents are expected to be received via standard
+input:
+
 ```
-$ mvn exec:java -Dexec.mainClass="com.google.search.robotstxt.App" -Dexec.args="arg0 arg1"
+$ mvn exec:java -Dexec.mainClass=com.google.search.robotstxt.RobotsParserApp -Dexec.args="--agent FooBot --url http://foo.com/bar"
+```
+
+If you want the application to read an existing robots.txt file, use flag `-f` (`--file`):
+
+```
+$ mvn exec:java -Dexec.mainClass=com.google.search.robotstxt.RobotsParserApp -Dexec.args="--agent FooBot --url http://foo.com/bar --file path/to/robots.txt"
 ```
 
 ## Source Code Headers
