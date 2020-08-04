@@ -14,6 +14,7 @@
 
 package com.google.search.robotstxt;
 
+import com.google.common.flogger.FluentLogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,6 +42,8 @@ import picocli.CommandLine;
     exitCodeOnExecutionException = 2,
     exitCodeOnInvalidInput = 3)
 public class RobotsParserApp implements Callable<Integer> {
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
   public RobotsParserApp() {}
 
   public static void main(final String[] args) {
@@ -81,20 +84,36 @@ public class RobotsParserApp implements Callable<Integer> {
     }
   }
 
+  private static void logError(final Exception e) {
+    System.out.println("ERROR: " + e.getMessage());
+    logger.atInfo().withCause(e).log("Stack trace:");
+  }
+
   /**
    * Parses given robots.txt file and performs matching process.
    *
    * @return {@code 0} if any of user-agents is allowed to crawl given URL and {@code 1} otherwise.
-   * @throws MatchException if exception occurred during matching process.
    */
   @Override
-  public Integer call() throws ParseException, MatchException {
-    final String robotsTxtContents = readRobotsTxt();
+  public Integer call() {
+    final String robotsTxtContents;
+    try {
+      robotsTxtContents = readRobotsTxt();
+    } catch (final ParseException e) {
+      logError(e);
+      return 2;
+    }
 
     final Parser parser = new RobotsParser(new RobotsParseHandler());
     final RobotsMatcher matcher = (RobotsMatcher) parser.parse(robotsTxtContents);
 
-    final boolean parseResult = matcher.allowedByRobots(agents, url);
+    final boolean parseResult;
+    try {
+      parseResult = matcher.allowedByRobots(agents, url);
+    } catch (final MatchException e) {
+      logError(e);
+      return 2;
+    }
 
     if (parseResult) {
       System.out.println("ALLOWED");
