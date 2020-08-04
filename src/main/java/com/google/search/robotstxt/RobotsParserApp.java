@@ -68,8 +68,10 @@ public class RobotsParserApp implements Callable<Integer> {
     try {
       if (Objects.isNull(robotsTxtPath)) {
         // Reading from stdin
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        return bufferedReader.lines().collect(Collectors.joining("\n", "", "\n"));
+        try (final BufferedReader bufferedReader =
+            new BufferedReader(new InputStreamReader(System.in))) {
+          return bufferedReader.lines().collect(Collectors.joining("\n", "", "\n"));
+        }
       } else {
         // Reading from file
         return Files.readString(Path.of(robotsTxtPath));
