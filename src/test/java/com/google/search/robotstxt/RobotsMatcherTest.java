@@ -155,7 +155,7 @@ public class RobotsMatcherTest {
     }
   }
 
-  /** Validates: global rules. */
+  /** Verifies: global rules. */
   @Test
   public void globalGroups() {
     final String robotsTxtBodyEmpty = "";
