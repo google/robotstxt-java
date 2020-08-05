@@ -75,7 +75,11 @@ public class RobotsContents {
     }
 
     void addUserAgent(final String userAgent) {
-      if (userAgent.trim().equals("*")) {
+      // Google-specific optimization: a '*' followed by space and more characters
+      // in a user-agent record is still regarded a global rule.
+      if (userAgent.length() >= 1
+          && userAgent.charAt(0) == '*'
+          && (userAgent.length() == 1 || Character.isWhitespace(userAgent.charAt(1)))) {
         global = true;
       } else {
         userAgents.add(userAgent);

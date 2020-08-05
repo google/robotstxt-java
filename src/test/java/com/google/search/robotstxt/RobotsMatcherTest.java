@@ -186,6 +186,25 @@ public class RobotsMatcherTest {
     }
   }
 
+  /**
+   * [Google-specific] Verifies: any user-agent with prefix "* " is considered as global wildcard.
+   */
+  @Test
+  public void globalGroupsPrefix() {
+    final String robotsTxtBody =
+        "user-agent: *\n" + "disallow: /x\n" + "user-agent: FooBot\n" + "allow: /x/y\n";
+
+    final String url = "http://foo.bar/x/y";
+
+    try {
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
+      assertFalse(matcher.singleAgentAllowedByRobots("BarBot", url));
+    } catch (final MatchException e) {
+      fail("Matcher has thrown an exception: " + e.getMessage());
+    }
+  }
+
   /** Verifies: case sensitivity of URIs. */
   @Test
   public void uriCaseSensitivity() {
