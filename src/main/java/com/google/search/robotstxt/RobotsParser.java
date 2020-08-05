@@ -15,6 +15,7 @@
 package com.google.search.robotstxt;
 
 import com.google.common.flogger.FluentLogger;
+import java.util.logging.Level;
 
 /** Robots.txt parser implementation. */
 public class RobotsParser extends Parser {
@@ -67,13 +68,14 @@ public class RobotsParser extends Parser {
     }
   }
 
-  private static void logWarning(
+  private static void log(
+      final Level level,
       final String message,
       final String robotsTxtBody,
       final int lineBegin,
       final int lineEnd,
       final int lineNumber) {
-    logger.atWarning().log(
+    logger.at(level).log(
         "%s%nAt line %d:%n%s\t", message, lineNumber, robotsTxtBody.substring(lineBegin, lineEnd));
   }
 
@@ -81,12 +83,16 @@ public class RobotsParser extends Parser {
       final String robotsTxtBody, final int lineBegin, final int lineEnd, final int lineNumber) {
     int limit = lineEnd;
     int separator = lineEnd;
+    int whitespaceSeparator = lineEnd;
     boolean hasContents = false;
 
     for (int i = lineBegin; i < lineEnd; i++) {
       final char ch = robotsTxtBody.charAt(i);
       if (!isWhitespace(ch)) {
         hasContents = true;
+      }
+      if (isWhitespace(ch) && hasContents) {
+        whitespaceSeparator = i;
       }
       if (separator == lineEnd && ch == ':') {
         separator = i;
@@ -98,29 +104,42 @@ public class RobotsParser extends Parser {
     }
 
     if (separator == lineEnd) {
-      if (hasContents) {
-        logWarning("No separator found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      // Google-specific optimization: some people forget the colon, so we need to
+      // accept whitespace in its stead.
+      if (whitespaceSeparator != lineEnd) {
+        log(
+            Level.INFO,
+            "Assuming whitespace as a separator.",
+            robotsTxtBody,
+            lineBegin,
+            lineEnd,
+            lineNumber);
+        separator = whitespaceSeparator;
+      } else {
+        if (hasContents) {
+          log(Level.WARNING, "No separator found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+        }
+        return;
       }
-      return;
     }
 
     final String key;
     try {
       key = trimBounded(robotsTxtBody, lineBegin, separator);
     } catch (ParseException e) {
-      logWarning("No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
     }
     final String value;
     try {
       value = trimBounded(robotsTxtBody, separator + 1, limit);
     } catch (ParseException e) {
-      logWarning("No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
     }
     final DirectiveType directiveType = parseDirective(key);
     if (directiveType == DirectiveType.UNKNOWN) {
-      logWarning("Unknown key.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "Unknown key.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
     }
     parseHandler.handleDirective(directiveType, value);
   }

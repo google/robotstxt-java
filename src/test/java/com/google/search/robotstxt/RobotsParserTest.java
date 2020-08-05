@@ -172,4 +172,20 @@ public class RobotsParserTest {
 
     parseAndValidate(robotsTxtBody, expectedContents);
   }
+
+  /** [Google-specific] Verifies: assuming colon if it's missing. */
+  @Test
+  public void testMissingSeparator() {
+    final String robotsTxtBody = "user-agent FooBot\n" + "disallow /\n";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Collections.singletonList(
+                new RobotsContents.Group(
+                    Collections.singletonList("FooBot"),
+                    Collections.singletonList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/")))));
+
+    parseAndValidate(robotsTxtBody, expectedContents);
+  }
 }
