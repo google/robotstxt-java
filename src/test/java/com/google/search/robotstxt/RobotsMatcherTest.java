@@ -160,7 +160,7 @@ public class RobotsMatcherTest {
   public void globalGroups() {
     final String robotsTxtBodyEmpty = "";
     final String robotsTxtBodyGlobal =
-        "user-agent: *\n" + "allow: /\n" + "user-agent: FooBot\n" + "disallow: /\n";
+        "user-agent: *\n" + "disallow: /x\n" + "user-agent: FooBot\n" + "allow: /x/y\n";
     final String robotsTxtBodySpecific =
         "user-agent: FooBot\n"
             + "allow: /\n"
@@ -176,8 +176,8 @@ public class RobotsMatcherTest {
       assertTrue(matcherEmpty.singleAgentAllowedByRobots("FooBot", url));
 
       final Matcher matcherGlobal = parse(robotsTxtBodyGlobal);
-      assertFalse(matcherGlobal.singleAgentAllowedByRobots("FooBot", url));
-      assertTrue(matcherGlobal.singleAgentAllowedByRobots("BarBot", url));
+      assertTrue(matcherGlobal.singleAgentAllowedByRobots("FooBot", url));
+      assertFalse(matcherGlobal.singleAgentAllowedByRobots("BarBot", url));
 
       final Matcher matcherSpecific = parse(robotsTxtBodySpecific);
       assertTrue(matcherSpecific.singleAgentAllowedByRobots("QuxBot", url));

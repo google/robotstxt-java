@@ -100,7 +100,9 @@ public class RobotsMatcher implements Matcher {
             {
               final int priority =
                   matchingStrategy.matchAllowPriority(path, rule.getDirectiveValue());
-              allow.updateSpecific(priority);
+              if (isSpecificGroup) {
+                allow.updateSpecific(priority);
+              }
               if (!ignoreGlobal && group.isGlobal()) {
                 allow.updateGlobal(priority);
               }
@@ -110,7 +112,9 @@ public class RobotsMatcher implements Matcher {
             {
               final int priority =
                   matchingStrategy.matchDisallowPriority(path, rule.getDirectiveValue());
-              disallow.updateSpecific(priority);
+              if (isSpecificGroup) {
+                disallow.updateSpecific(priority);
+              }
               if (!ignoreGlobal && group.isGlobal()) {
                 disallow.updateGlobal(priority);
               }
