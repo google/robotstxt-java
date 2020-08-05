@@ -378,4 +378,41 @@ public class RobotsMatcherTest {
       }
     }
   }
+
+  /**
+   * [Google-specific] Verifies: {@code /index.htm} or {@code /index.html} should be normalised to
+   * {@code /}.
+   */
+  @Test
+  public void indexNormalisation() {
+    final String robotsTxtBody =
+        "user-agent: FooBot\n"
+            + "disallow: /\n"
+            + "allow: /index.htm"
+            + "allow: /index.html\n"
+            + "allow: /x\n"
+            + "disallow: /x/index.htm\n"
+            + "disallow: /x/index.html\n";
+
+    final String[] urls = {
+      "http://foo.bar/",
+      "http://foo.bar/index.htm",
+      "http://foo.bar/index.html",
+      "http://foo.bar/x/",
+      "http://foo.bar/x/index.htm",
+      "http://foo.bar/x/index.html"
+    };
+
+    try {
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[0]));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[1]));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[2]));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[3]));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[4]));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[5]));
+    } catch (final MatchException e) {
+      fail("Matcher has thrown an exception: " + e.getMessage());
+    }
+  }
 }

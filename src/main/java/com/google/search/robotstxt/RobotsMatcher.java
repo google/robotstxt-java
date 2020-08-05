@@ -63,7 +63,20 @@ public class RobotsMatcher implements Matcher {
 
   private static String getPath(final String url) throws MatchException {
     try {
-      return new URL(url).getPath();
+      String path = new URL(url).getPath();
+
+      // Google-specific optimization: 'index.htm' and 'index.html' are normalized
+      // to '/'.
+      final int slashPos = path.lastIndexOf('/');
+
+      if (slashPos != -1) {
+        final String fileName = path.substring(slashPos + 1);
+        if ("index.htm".equals(fileName) || "index.html".equals(fileName)) {
+          path = path.substring(0, slashPos + 1);
+        }
+      }
+
+      return path;
     } catch (final MalformedURLException e) {
       throw new MatchException("Malformed URL was given.", e);
     }
