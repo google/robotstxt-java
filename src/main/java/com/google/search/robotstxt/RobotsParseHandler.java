@@ -41,14 +41,7 @@ public class RobotsParseHandler implements ParseHandler {
 
   private void handleUserAgent(final String value) {
     flushCompleteGroup(true);
-    int end = 0;
-    for (; end < value.length(); end++) {
-      final char ch = value.charAt(end);
-      if (!Character.isAlphabetic(ch) && ch != '-' && ch != '_') {
-        break;
-      }
-    }
-    currentGroup.addUserAgent(value.substring(0, end));
+    currentGroup.addUserAgent(value);
   }
 
   @Override
@@ -63,7 +56,7 @@ public class RobotsParseHandler implements ParseHandler {
       case ALLOW:
       case DISALLOW:
         {
-          if (currentGroup.getUserAgents().size() > 0) {
+          if (currentGroup.isGlobal() || currentGroup.getUserAgents().size() > 0) {
             currentGroup.addRule(directiveType, directiveValue);
           }
           break;

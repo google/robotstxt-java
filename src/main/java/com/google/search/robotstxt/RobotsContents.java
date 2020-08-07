@@ -89,7 +89,14 @@ public class RobotsContents {
 
         global = true;
       } else {
-        userAgents.add(userAgent);
+        int end = 0;
+        for (; end < userAgent.length(); end++) {
+          final char ch = userAgent.charAt(end);
+          if (!Character.isAlphabetic(ch) && ch != '-' && ch != '_') {
+            break;
+          }
+        }
+        userAgents.add(userAgent.substring(0, end));
       }
     }
 
