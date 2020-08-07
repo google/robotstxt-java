@@ -14,6 +14,7 @@
 
 package com.google.search.robotstxt;
 
+import com.google.common.flogger.FluentLogger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -25,6 +26,8 @@ import java.util.Map;
  * to a {@link MatchingStrategy} class.
  */
 public class RobotsMatcher implements Matcher {
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
   /** Class containing current match priorities */
   private static class Match {
     /** Priority based on agent-specific rules */
@@ -72,7 +75,11 @@ public class RobotsMatcher implements Matcher {
       if (slashPos != -1) {
         final String fileName = path.substring(slashPos + 1);
         if ("index.htm".equals(fileName) || "index.html".equals(fileName)) {
-          path = path.substring(0, slashPos + 1);
+          final String newPath = path.substring(0, slashPos + 1);
+
+          logger.atInfo().log("Omitted index page (\"%s\" -> \"%s\")", path, newPath);
+
+          path = newPath;
         }
       }
 

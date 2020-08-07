@@ -137,9 +137,21 @@ public class RobotsParser extends Parser {
       // per URL all values are trimmed to fit this size.
       final byte[] untrimmedValueBytes =
           trimBounded(robotsTxtBody, separator + 1, limit).getBytes(StandardCharsets.UTF_8);
+
       // We decrease max size by two bytes. It is done to fit a 'rectangle' character (3 bytes)
       // if the last character is trimmed to an invalid one.
       final int maxLengthBytes = 2083 - 2;
+
+      if (untrimmedValueBytes.length > maxLengthBytes) {
+        log(
+            Level.INFO,
+            "Value truncated to 2083 bytes.",
+            robotsTxtBody,
+            lineBegin,
+            lineEnd,
+            lineNumber);
+      }
+
       value =
           new String(
               untrimmedValueBytes,
