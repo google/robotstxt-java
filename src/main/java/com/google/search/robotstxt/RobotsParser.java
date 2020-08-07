@@ -15,6 +15,7 @@
 package com.google.search.robotstxt;
 
 import com.google.common.flogger.FluentLogger;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 /** Robots.txt parser implementation. */
@@ -132,7 +133,19 @@ public class RobotsParser extends Parser {
     }
     final String value;
     try {
-      value = trimBounded(robotsTxtBody, separator + 1, limit);
+      // Google-specific optimization: since no search engine will process more than 2083 bytes
+      // per URL all values are trimmed to fit this size.
+      final byte[] untrimmedValueBytes =
+          trimBounded(robotsTxtBody, separator + 1, limit).getBytes(StandardCharsets.UTF_8);
+      // We decrease max size by two bytes. It is done to fit a 'rectangle' character (3 bytes)
+      // if the last character is trimmed to an invalid one.
+      final int maxLengthBytes = 2083 - 2;
+      value =
+          new String(
+              untrimmedValueBytes,
+              0,
+              Math.min(untrimmedValueBytes.length, maxLengthBytes),
+              StandardCharsets.UTF_8);
     } catch (ParseException e) {
       log(Level.WARNING, "No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
