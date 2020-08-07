@@ -47,6 +47,10 @@ public class RobotsMatcher implements Matcher {
     public int getPriorityGlobal() {
       return priorityGlobal;
     }
+
+    public void resetGlobal() {
+      priorityGlobal = 0;
+    }
   }
 
   private final RobotsContents robotsContents;
@@ -83,6 +87,7 @@ public class RobotsMatcher implements Matcher {
       final List<String> userAgents, final String path, final boolean ignoreGlobal) {
     final Match allow = new Match();
     final Match disallow = new Match();
+    boolean foundSpecificGroup = false;
 
     for (RobotsContents.Group group : robotsContents.getGroups()) {
       final boolean isSpecificGroup =
@@ -90,6 +95,7 @@ public class RobotsMatcher implements Matcher {
               .anyMatch(
                   userAgent ->
                       group.getUserAgents().stream().anyMatch(userAgent::equalsIgnoreCase));
+      foundSpecificGroup |= isSpecificGroup;
       if (!isSpecificGroup && (ignoreGlobal || !group.isGlobal())) {
         continue;
       }
@@ -100,7 +106,9 @@ public class RobotsMatcher implements Matcher {
             {
               final int priority =
                   matchingStrategy.matchAllowPriority(path, rule.getDirectiveValue());
-              allow.updateSpecific(priority);
+              if (isSpecificGroup) {
+                allow.updateSpecific(priority);
+              }
               if (!ignoreGlobal && group.isGlobal()) {
                 allow.updateGlobal(priority);
               }
@@ -110,7 +118,9 @@ public class RobotsMatcher implements Matcher {
             {
               final int priority =
                   matchingStrategy.matchDisallowPriority(path, rule.getDirectiveValue());
-              disallow.updateSpecific(priority);
+              if (isSpecificGroup) {
+                disallow.updateSpecific(priority);
+              }
               if (!ignoreGlobal && group.isGlobal()) {
                 disallow.updateGlobal(priority);
               }
@@ -122,6 +132,13 @@ public class RobotsMatcher implements Matcher {
             break;
         }
       }
+    }
+
+    // If there is at least one group specific for current agents, global groups should be
+    // disregarded.
+    if (foundSpecificGroup) {
+      allow.resetGlobal();
+      disallow.resetGlobal();
     }
 
     return Map.entry(allow, disallow);
