@@ -83,7 +83,7 @@ public class RobotsContents {
           && userAgent.charAt(0) == '*'
           && (userAgent.length() == 1 || Character.isWhitespace(userAgent.charAt(1)))) {
 
-        if (Character.isWhitespace(userAgent.charAt(1))) {
+        if (userAgent.length() > 1 && Character.isWhitespace(userAgent.charAt(1))) {
           logger.atInfo().log("Assuming \"%s\" user-agent as \"*\"", userAgent);
         }
 
