@@ -89,6 +89,10 @@ public class RobotsParser extends Parser {
 
     for (int i = lineBegin; i < lineEnd; i++) {
       final char ch = robotsTxtBody.charAt(i);
+      if (ch == '#') {
+        limit = i;
+        break;
+      }
       if (!isWhitespace(ch)) {
         hasContents = true;
       }
@@ -97,10 +101,6 @@ public class RobotsParser extends Parser {
       }
       if (separator == lineEnd && ch == ':') {
         separator = i;
-      }
-      if (ch == '#') {
-        limit = i;
-        break;
       }
     }
 
