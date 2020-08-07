@@ -192,7 +192,7 @@ public class RobotsMatcherTest {
   @Test
   public void globalGroupsPrefix() {
     final String robotsTxtBody =
-        "user-agent: *\n" + "disallow: /x\n" + "user-agent: FooBot\n" + "allow: /x/y\n";
+        "user-agent: * baz\n" + "disallow: /x\n" + "user-agent: FooBot\n" + "allow: /x/y\n";
 
     final String url = "http://foo.bar/x/y";
 
