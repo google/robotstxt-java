@@ -224,6 +224,7 @@ public class RobotsMatcherTest {
     }
   }
 
+  /** Verifies: longest match strategy. */
   @Test
   public void longestMatch() {
     final String url = "http://foo.bar/x/page.html";
@@ -388,7 +389,7 @@ public class RobotsMatcherTest {
     final String robotsTxtBody =
         "user-agent: FooBot\n"
             + "disallow: /\n"
-            + "allow: /index.htm"
+            + "allow: /index.htm\n"
             + "allow: /index.html\n"
             + "allow: /x\n"
             + "disallow: /x/index.htm\n"
