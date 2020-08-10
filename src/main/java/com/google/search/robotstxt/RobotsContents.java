@@ -70,8 +70,13 @@ public class RobotsContents {
     }
 
     public Group(final List<String> userAgents, final List<Rule> rules) {
+      this(userAgents, rules, false);
+    }
+
+    public Group(final List<String> userAgents, final List<Rule> rules, final boolean global) {
       this.userAgents = new HashSet<>(userAgents);
       this.rules = new HashSet<>(rules);
+      this.global = global;
     }
 
     void addUserAgent(final String userAgent) {
@@ -110,7 +115,9 @@ public class RobotsContents {
       if (this == obj) return true;
       if (obj == null || getClass() != obj.getClass()) return false;
       Group other = (Group) obj;
-      return Objects.equals(userAgents, other.userAgents) && Objects.equals(rules, other.rules);
+      return Objects.equals(userAgents, other.userAgents)
+          && Objects.equals(rules, other.rules)
+          && Objects.equals(global, other.global);
     }
 
     @Override
