@@ -96,7 +96,7 @@ public class RobotsParser extends Parser {
       if (!isWhitespace(ch)) {
         hasContents = true;
       }
-      if (isWhitespace(ch) && hasContents) {
+      if (isWhitespace(ch) && hasContents && whitespaceSeparator == lineEnd) {
         whitespaceSeparator = i;
       }
       if (separator == lineEnd && ch == ':') {
