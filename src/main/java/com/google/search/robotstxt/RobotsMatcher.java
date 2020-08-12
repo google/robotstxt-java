@@ -72,8 +72,7 @@ public class RobotsMatcher implements Matcher {
     try {
       String path = new URL(url).getPath();
 
-      // Google-specific optimization: 'index.htm' and 'index.html' are normalized
-      // to '/'.
+      // Google-specific optimization: 'index.htm' and 'index.html' are normalized to '/'.
       final int slashPos = path.lastIndexOf('/');
 
       if (slashPos != -1) {

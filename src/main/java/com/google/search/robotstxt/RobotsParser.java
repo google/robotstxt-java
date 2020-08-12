@@ -106,7 +106,7 @@ public class RobotsParser extends Parser {
 
     if (separator == lineEnd) {
       // Google-specific optimization: some people forget the colon, so we need to
-      // accept whitespace in its stead.
+      // accept whitespace instead.
       if (whitespaceSeparator != lineEnd) {
         log(
             Level.INFO,
