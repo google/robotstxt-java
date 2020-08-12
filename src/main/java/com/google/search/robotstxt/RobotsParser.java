@@ -131,12 +131,13 @@ public class RobotsParser extends Parser {
       log(Level.WARNING, "No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
     }
-    final String value;
+    String value;
     try {
+      value = trimBounded(robotsTxtBody, separator + 1, limit);
+
       // Google-specific optimization: since no search engine will process more than 2083 bytes
       // per URL all values are trimmed to fit this size.
-      final byte[] valueBytes =
-          trimBounded(robotsTxtBody, separator + 1, limit).getBytes(StandardCharsets.UTF_8);
+      final byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
 
       // We decrease max size by two bytes. It is done to fit a replacement character (\uFFFD)
       // if the last character is trimmed to an invalid one.
@@ -150,14 +151,14 @@ public class RobotsParser extends Parser {
             lineBegin,
             lineEnd,
             lineNumber);
-      }
 
-      value =
-          new String(
-              valueBytes,
-              0,
-              Math.min(valueBytes.length, maxLengthBytes),
-              StandardCharsets.UTF_8);
+        value =
+            new String(
+                valueBytes,
+                0,
+                Math.min(valueBytes.length, maxLengthBytes),
+                StandardCharsets.UTF_8);
+      }
     } catch (final ParseException e) {
       log(Level.WARNING, "No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
