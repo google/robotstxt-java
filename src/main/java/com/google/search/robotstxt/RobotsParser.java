@@ -135,14 +135,14 @@ public class RobotsParser extends Parser {
     try {
       // Google-specific optimization: since no search engine will process more than 2083 bytes
       // per URL all values are trimmed to fit this size.
-      final byte[] untrimmedValueBytes =
+      final byte[] valueBytes =
           trimBounded(robotsTxtBody, separator + 1, limit).getBytes(StandardCharsets.UTF_8);
 
       // We decrease max size by two bytes. It is done to fit a 'rectangle' character (3 bytes)
       // if the last character is trimmed to an invalid one.
       final int maxLengthBytes = 2083 - 2;
 
-      if (untrimmedValueBytes.length > maxLengthBytes) {
+      if (valueBytes.length > maxLengthBytes) {
         log(
             Level.INFO,
             "Value truncated to 2083 bytes.",
@@ -154,11 +154,11 @@ public class RobotsParser extends Parser {
 
       value =
           new String(
-              untrimmedValueBytes,
+              valueBytes,
               0,
-              Math.min(untrimmedValueBytes.length, maxLengthBytes),
+              Math.min(valueBytes.length, maxLengthBytes),
               StandardCharsets.UTF_8);
-    } catch (ParseException e) {
+    } catch (final ParseException e) {
       log(Level.WARNING, "No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
     }
