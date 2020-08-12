@@ -138,7 +138,7 @@ public class RobotsParser extends Parser {
       final byte[] valueBytes =
           trimBounded(robotsTxtBody, separator + 1, limit).getBytes(StandardCharsets.UTF_8);
 
-      // We decrease max size by two bytes. It is done to fit a 'rectangle' character (3 bytes)
+      // We decrease max size by two bytes. It is done to fit a replacement character (\uFFFD)
       // if the last character is trimmed to an invalid one.
       final int maxLengthBytes = 2083 - 2;
 
