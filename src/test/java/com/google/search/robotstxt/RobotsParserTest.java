@@ -46,7 +46,7 @@ public class RobotsParserTest {
 
   /** Verifies: rules grouping, rules parsing, invalid directives ignorance. */
   @Test
-  public void testMultipleGroups() {
+  public void multipleGroups() {
     final String robotsTxtBody =
         "allow: /foo/bar/\n"
             + "\n"
@@ -90,7 +90,7 @@ public class RobotsParserTest {
 
   /** Verifies: CR character must be treated as EOL, invalid directives ignorance. */
   @Test
-  public void testCr() {
+  public void crParsing() {
     final String robotsTxtBody =
         "user-agent: FooBot\n"
             + "disallow: /\n"
@@ -113,7 +113,7 @@ public class RobotsParserTest {
 
   /** Verifies: CL RF must be treated as EOL. */
   @Test
-  public void testCrLf() {
+  public void crLfParsing() {
     final String robotsTxtBody =
         "allow: /foo/bar/\r\n"
             + "\r\n"
@@ -144,7 +144,7 @@ public class RobotsParserTest {
 
   /** Verifies: surrounding whitespace characters (LF, CR) ignorance. */
   @Test
-  public void testWhitespaces() {
+  public void whitespacesParsing() {
     final String robotsTxtBody =
         "user-agent \t: \tFooBot\n"
             + "disallow  : /  \n"
@@ -175,7 +175,7 @@ public class RobotsParserTest {
 
   /** [Google-specific] Verifies: assuming colon if it's missing. */
   @Test
-  public void testMissingSeparator() {
+  public void missingSeparator() {
     final String robotsTxtBody = "user-agent FooBot\n" + "disallow /\n" + "allow foo bar\n";
 
     final RobotsContents expectedContents =
@@ -192,7 +192,7 @@ public class RobotsParserTest {
 
   /** [Google-specific] Verifies: trimming values to specific number of bytes */
   @Test
-  public void testTrimmingToBytes() {
+  public void trimmingToBytes() {
     final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /foo/bar/baz/qux\n";
 
     final RobotsContents expectedContents =
