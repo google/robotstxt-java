@@ -69,11 +69,11 @@ public class RobotsContents {
       rules = new HashSet<>();
     }
 
-    public Group(final List<String> userAgents, final List<Rule> rules) {
+    Group(final List<String> userAgents, final List<Rule> rules) {
       this(userAgents, rules, false);
     }
 
-    public Group(final List<String> userAgents, final List<Rule> rules, final boolean global) {
+    Group(final List<String> userAgents, final List<Rule> rules, final boolean global) {
       this.userAgents = new HashSet<>(userAgents);
       this.rules = new HashSet<>(rules);
       this.global = global;
