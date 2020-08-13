@@ -108,7 +108,7 @@ public class RobotsParser extends Parser {
     if (valueBytes.length > maxLengthBytes) {
       log(
           Level.INFO,
-          "Value truncated to 2083 bytes.",
+          "Value truncated to " + valueMaxLengthBytes + " bytes.",
           robotsTxtBody,
           lineBegin,
           lineEnd,
