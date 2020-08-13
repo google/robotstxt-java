@@ -15,13 +15,22 @@
 package com.google.search.robotstxt;
 
 import com.google.common.flogger.FluentLogger;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 
 /** Robots.txt parser implementation. */
 public class RobotsParser extends Parser {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private final int valueMaxLengthBytes;
 
-  public RobotsParser(ParseHandler parseHandler) {
+  public RobotsParser(final ParseHandler parseHandler) {
     super(parseHandler);
+    this.valueMaxLengthBytes = 2083;
+  }
+
+  RobotsParser(final ParseHandler parseHandler, final int valueMaxLengthBytes) {
+    super(parseHandler);
+    this.valueMaxLengthBytes = valueMaxLengthBytes;
   }
 
   private static boolean isWhitespace(final char ch) {
@@ -67,60 +76,126 @@ public class RobotsParser extends Parser {
     }
   }
 
-  private static void logWarning(
+  private static void log(
+      final Level level,
       final String message,
       final String robotsTxtBody,
       final int lineBegin,
       final int lineEnd,
       final int lineNumber) {
-    logger.atWarning().log(
+    logger.at(level).log(
         "%s%nAt line %d:%n%s\t", message, lineNumber, robotsTxtBody.substring(lineBegin, lineEnd));
+  }
+
+  /**
+   * Extracts value from robots.txt body and trims it to {@link this#valueMaxLengthBytes} bytes if
+   * necessary. Most of parameters are used for logging.
+   *
+   * @param robotsTxtBody contents of robots.txt file
+   * @param separator index of separator between key and value
+   * @param limit index of key and value ending
+   * @param lineBegin index of line beginning
+   * @param lineEnd index of line ending
+   * @param lineNumber number of line in robots.txt file
+   * @return parsed value within given line of robots.txt
+   * @throws ParseException if line limits are invalid
+   */
+  private String getValue(
+      final String robotsTxtBody,
+      final int separator,
+      final int limit,
+      final int lineBegin,
+      final int lineEnd,
+      final int lineNumber)
+      throws ParseException {
+    String value = trimBounded(robotsTxtBody, separator + 1, limit);
+
+    // Google-specific optimization: since no search engine will process more than 2083 bytes
+    // per URL all values are trimmed to fit this size.
+    final byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
+
+    // We decrease max size by two bytes. It is done to fit a replacement character (\uFFFD)
+    // if the last character is trimmed to an invalid one.
+    final int maxLengthBytes = valueMaxLengthBytes - 2;
+
+    if (valueBytes.length > maxLengthBytes) {
+      log(
+          Level.INFO,
+          "Value truncated to " + valueMaxLengthBytes + " bytes.",
+          robotsTxtBody,
+          lineBegin,
+          lineEnd,
+          lineNumber);
+
+      value =
+          new String(
+              valueBytes, 0, Math.min(valueBytes.length, maxLengthBytes), StandardCharsets.UTF_8);
+    }
+
+    return value;
   }
 
   private void parseLine(
       final String robotsTxtBody, final int lineBegin, final int lineEnd, final int lineNumber) {
     int limit = lineEnd;
     int separator = lineEnd;
+    int whitespaceSeparator = lineEnd;
     boolean hasContents = false;
 
     for (int i = lineBegin; i < lineEnd; i++) {
       final char ch = robotsTxtBody.charAt(i);
-      if (!isWhitespace(ch)) {
-        hasContents = true;
-      }
-      if (separator == lineEnd && ch == ':') {
-        separator = i;
-      }
       if (ch == '#') {
         limit = i;
         break;
       }
+      if (!isWhitespace(ch)) {
+        hasContents = true;
+      }
+      if (isWhitespace(ch) && hasContents && whitespaceSeparator == lineEnd) {
+        whitespaceSeparator = i;
+      }
+      if (separator == lineEnd && ch == ':') {
+        separator = i;
+      }
     }
 
     if (separator == lineEnd) {
-      if (hasContents) {
-        logWarning("No separator found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      // Google-specific optimization: some people forget the colon, so we need to
+      // accept whitespace instead.
+      if (whitespaceSeparator != lineEnd) {
+        log(
+            Level.INFO,
+            "Assuming whitespace as a separator.",
+            robotsTxtBody,
+            lineBegin,
+            lineEnd,
+            lineNumber);
+        separator = whitespaceSeparator;
+      } else {
+        if (hasContents) {
+          log(Level.WARNING, "No separator found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+        }
+        return;
       }
-      return;
     }
 
     final String key;
     try {
       key = trimBounded(robotsTxtBody, lineBegin, separator);
     } catch (ParseException e) {
-      logWarning("No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
     }
-    final String value;
+    String value;
     try {
-      value = trimBounded(robotsTxtBody, separator + 1, limit);
-    } catch (ParseException e) {
-      logWarning("No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      value = getValue(robotsTxtBody, separator, limit, lineBegin, lineEnd, lineNumber);
+    } catch (final ParseException e) {
+      log(Level.WARNING, "No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
       return;
     }
     final DirectiveType directiveType = parseDirective(key);
     if (directiveType == DirectiveType.UNKNOWN) {
-      logWarning("Unknown key.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "Unknown key.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
     }
     parseHandler.handleDirective(directiveType, value);
   }
