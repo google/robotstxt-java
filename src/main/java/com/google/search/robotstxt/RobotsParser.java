@@ -87,6 +87,19 @@ public class RobotsParser extends Parser {
         "%s%nAt line %d:%n%s\t", message, lineNumber, robotsTxtBody.substring(lineBegin, lineEnd));
   }
 
+  /**
+   * Extracts value from robots.txt body and trims it to {@link this#valueMaxLengthBytes} bytes if
+   * necessary. Most of parameters are used for logging.
+   *
+   * @param robotsTxtBody contents of robots.txt file
+   * @param separator index of separator between key and value
+   * @param limit index of key and value ending
+   * @param lineBegin index of line beginning
+   * @param lineEnd index of line ending
+   * @param lineNumber number of line in robots.txt file
+   * @return parsed value within given line of robots.txt
+   * @throws ParseException if line limits are invalid
+   */
   private String getValue(
       final String robotsTxtBody,
       final int separator,
