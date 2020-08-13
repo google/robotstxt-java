@@ -69,10 +69,12 @@ public class RobotsContents {
       rules = new HashSet<>();
     }
 
+    // Intended to be used from tests only.
     Group(final List<String> userAgents, final List<Rule> rules) {
       this(userAgents, rules, false);
     }
 
+    // Intended to be used from tests only.
     Group(final List<String> userAgents, final List<Rule> rules, final boolean global) {
       this.userAgents = new HashSet<>(userAgents);
       this.rules = new HashSet<>(rules);
