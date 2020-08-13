@@ -21,9 +21,16 @@ import java.util.logging.Level;
 /** Robots.txt parser implementation. */
 public class RobotsParser extends Parser {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private final int valueMaxLengthBytes;
 
-  public RobotsParser(ParseHandler parseHandler) {
+  public RobotsParser(final ParseHandler parseHandler) {
     super(parseHandler);
+    this.valueMaxLengthBytes = 2083;
+  }
+
+  RobotsParser(final ParseHandler parseHandler, final int valueMaxLengthBytes) {
+    super(parseHandler);
+    this.valueMaxLengthBytes = valueMaxLengthBytes;
   }
 
   private static boolean isWhitespace(final char ch) {
@@ -80,7 +87,7 @@ public class RobotsParser extends Parser {
         "%s%nAt line %d:%n%s\t", message, lineNumber, robotsTxtBody.substring(lineBegin, lineEnd));
   }
 
-  private static String getValue(
+  private String getValue(
       final String robotsTxtBody,
       final int separator,
       final int limit,
@@ -96,7 +103,7 @@ public class RobotsParser extends Parser {
 
     // We decrease max size by two bytes. It is done to fit a replacement character (\uFFFD)
     // if the last character is trimmed to an invalid one.
-    final int maxLengthBytes = 2083 - 2;
+    final int maxLengthBytes = valueMaxLengthBytes - 2;
 
     if (valueBytes.length > maxLengthBytes) {
       log(
