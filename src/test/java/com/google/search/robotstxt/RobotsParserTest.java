@@ -173,6 +173,28 @@ public class RobotsParserTest {
     parseAndValidate(robotsTxtBody, expectedContents);
   }
 
+  /** Verifies: global rules parsing. */
+  @Test
+  public void testGlobalGroup() {
+    final String robotsTxtBody =
+        "User-agent: *\n" + "Disallow: /x/\n" + "User-agent: FooBot\n" + "Disallow: /y/\n";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Arrays.asList(
+                new RobotsContents.Group(
+                    Collections.emptyList(),
+                    Collections.singletonList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/x/")),
+                    true),
+                new RobotsContents.Group(
+                    Collections.singletonList("FooBot"),
+                    Collections.singletonList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/y/")))));
+
+    parseAndValidate(robotsTxtBody, expectedContents);
+  }
+
   /** [Google-specific] Verifies: assuming colon if it's missing. */
   @Test
   public void testMissingSeparator() {
