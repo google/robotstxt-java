@@ -172,7 +172,7 @@ public class RobotsParserTest {
 
     parseAndValidate(robotsTxtBody, expectedContents);
   }
-
+  
   /** Verifies: global rules parsing. */
   @Test
   public void testGlobalGroup() {
@@ -193,5 +193,44 @@ public class RobotsParserTest {
                         new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/y/")))));
 
     parseAndValidate(robotsTxtBody, expectedContents);
+  }
+  
+  /** [Google-specific] Verifies: assuming colon if it's missing. */
+  @Test
+  public void testMissingSeparator() {
+    final String robotsTxtBody = "user-agent FooBot\n" + "disallow /\n" + "allow foo bar\n";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Collections.singletonList(
+                new RobotsContents.Group(
+                    Collections.singletonList("FooBot"),
+                    Arrays.asList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/"),
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.ALLOW, "foo bar")))));
+
+    parseAndValidate(robotsTxtBody, expectedContents);
+  }
+
+  /** [Google-specific] Verifies: trimming values to specific number of bytes */
+  @Test
+  public void testTrimmingToBytes() {
+    final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /foo/bar/baz/qux\n";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Collections.singletonList(
+                new RobotsContents.Group(
+                    Collections.singletonList("FooBot"),
+                    Collections.singletonList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/foo/b")))));
+
+    Parser parser = new RobotsParser(new RobotsParseHandler(), 8);
+    Matcher matcher = parser.parse(robotsTxtBody);
+    RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
+
+    expectedContents
+        .getGroups()
+        .forEach(expectedGroup -> assertThat(expectedGroup).isIn(actualContents.getGroups()));
   }
 }
