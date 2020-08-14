@@ -172,7 +172,7 @@ public class RobotsParserTest {
 
     parseAndValidate(robotsTxtBody, expectedContents);
   }
-  
+
   /** Verifies: global rules parsing. */
   @Test
   public void testGlobalGroup() {
@@ -194,7 +194,7 @@ public class RobotsParserTest {
 
     parseAndValidate(robotsTxtBody, expectedContents);
   }
-  
+
   /** [Google-specific] Verifies: assuming colon if it's missing. */
   @Test
   public void testMissingSeparator() {
