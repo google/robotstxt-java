@@ -90,7 +90,7 @@ public class RobotsParserTest {
 
   /** Verifies: CR character must be treated as EOL, invalid directives ignorance. */
   @Test
-  public void testCr() {
+  public void testCrParsing() {
     final String robotsTxtBody =
         "user-agent: FooBot\n"
             + "disallow: /\n"
@@ -113,7 +113,7 @@ public class RobotsParserTest {
 
   /** Verifies: CL RF must be treated as EOL. */
   @Test
-  public void testCrLf() {
+  public void testCrLfParsing() {
     final String robotsTxtBody =
         "allow: /foo/bar/\r\n"
             + "\r\n"
@@ -144,7 +144,7 @@ public class RobotsParserTest {
 
   /** Verifies: surrounding whitespace characters (LF, CR) ignorance. */
   @Test
-  public void testWhitespaces() {
+  public void testWhitespacesParsing() {
     final String robotsTxtBody =
         "user-agent \t: \tFooBot\n"
             + "disallow  : /  \n"

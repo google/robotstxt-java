@@ -29,7 +29,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: parsing an matching robots.txt containing single group */
   @Test
-  public void singleGroup() {
+  public void testSingleGroup() {
     final String robotsTxtBodyCorrect = "user-agent: FooBot\n" + "disallow: /\n";
     final String robotsTxtBodyIncorrect = "foo: FooBot\n" + "bar: /\n";
 
@@ -51,7 +51,7 @@ public class RobotsMatcherTest {
    * ignorance.
    */
   @Test
-  public void multipleGroups() {
+  public void testMultipleGroups() {
     final String robotsTxtBody =
         "allow: /foo/bar/\n"
             + "\n"
@@ -97,7 +97,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: directives case insensitivity. */
   @Test
-  public void directiveCaseInsensitivity() {
+  public void testDirectiveCaseInsensitivity() {
     final String robotsTxtBodyUpper = "USER-AGENT: FooBot\n" + "ALLOW: /x/\n" + "DISALLOW: /\n";
     final String robotsTxtBodyLower = "user-agent: FooBot\n" + "allow: /x/\n" + "disallow: /\n";
     final String robotsTxtBodyRandom = "uSeR-aGeNt: FooBot\n" + "AlLoW: /x/\n" + "dIsAlLoW: /\n";
@@ -124,7 +124,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: user agent case insensitivity, user agent names convention compliance. */
   @Test
-  public void userAgentCaseInsensitivity() {
+  public void testUserAgentCaseInsensitivity() {
     final String robotsTxtBodyUpper = "user-agent: FOO BAR\n" + "allow: /x/\n" + "disallow: /\n";
     final String robotsTxtBodyLower = "user-agent: foo bar\n" + "allow: /x/\n" + "disallow: /\n";
     final String robotsTxtBodyRandom = "user-agent: FoO bAr\n" + "allow: /x/\n" + "disallow: /\n";
@@ -157,7 +157,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: global rules. */
   @Test
-  public void globalGroups() {
+  public void testGlobalGroups() {
     final String robotsTxtBodyEmpty = "";
     final String robotsTxtBodyGlobal =
         "user-agent: *\n" + "disallow: /x\n" + "user-agent: FooBot\n" + "allow: /x/y\n";
@@ -190,7 +190,7 @@ public class RobotsMatcherTest {
    * [Google-specific] Verifies: any user-agent with prefix "* " is considered as global wildcard.
    */
   @Test
-  public void globalGroupsPrefix() {
+  public void testGlobalGroupsPrefix() {
     final String robotsTxtBody =
         "user-agent: * baz\n" + "disallow: /x\n" + "user-agent: FooBot\n" + "allow: /x/y\n";
 
@@ -207,7 +207,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: case sensitivity of URIs. */
   @Test
-  public void uriCaseSensitivity() {
+  public void testUriCaseSensitivity() {
     final String robotsTxtBodyUpper = "user-agent: FooBot\n" + "disallow: /X/\n";
     final String robotsTxtBodyLower = "user-agent: FooBot\n" + "disallow: /x/\n";
 
@@ -226,7 +226,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: longest match strategy. */
   @Test
-  public void longestMatch() {
+  public void testLongestMatch() {
     final String url = "http://foo.bar/x/page.html";
 
     {
@@ -337,7 +337,7 @@ public class RobotsMatcherTest {
 
   /** Verifies: valid parsing of special characters ('*', '$', '#') */
   @Test
-  public void specialCharacters() {
+  public void testSpecialCharacters() {
     {
       final String robotsTxtBody =
           "User-agent: FooBot\n" + "Disallow: /foo/bar/quz\n" + "Allow: /foo/*/qux\n";
@@ -385,7 +385,7 @@ public class RobotsMatcherTest {
    * {@code /}.
    */
   @Test
-  public void indexNormalisation() {
+  public void testIndexNormalisation() {
     final String robotsTxtBody =
         "user-agent: FooBot\n"
             + "disallow: /\n"
