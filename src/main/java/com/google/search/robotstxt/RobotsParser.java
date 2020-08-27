@@ -61,9 +61,7 @@ public class RobotsParser extends Parser {
     if (begin >= end) {
       throw new ParseException();
     } else {
-      return new String(
-          Arrays.copyOfRange(bytes, begin, end),
-          StandardCharsets.UTF_8);
+      return new String(Arrays.copyOfRange(bytes, begin, end), StandardCharsets.UTF_8);
     }
   }
 
