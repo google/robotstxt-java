@@ -16,6 +16,7 @@ package com.google.search.robotstxt;
 
 import com.google.common.flogger.FluentLogger;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 /** Robots.txt parser implementation. */
@@ -41,26 +42,26 @@ public class RobotsParser extends Parser {
    * Extracts substring between given indexes and trims preceding and succeeding whitespace
    * characters.
    *
-   * @param string string to extract from
+   * @param bytes data to extract from
    * @param beginIndex the beginning index, inclusive
    * @param endIndex the ending index, exclusive
    * @return extracted substring with trimmed whitespaces
    * @throws ParseException if there are only whitespace characters between given indexes
    */
-  private static String trimBounded(final String string, final int beginIndex, final int endIndex)
+  private static String trimBounded(final byte[] bytes, final int beginIndex, final int endIndex)
       throws ParseException {
     int begin = beginIndex;
     int end = endIndex;
-    while (begin < endIndex && isWhitespace(string.charAt(begin))) {
+    while (begin < endIndex && isWhitespace((char) bytes[begin])) {
       begin++;
     }
-    while (end > beginIndex && isWhitespace(string.charAt(end - 1))) {
+    while (end > beginIndex && isWhitespace((char) bytes[end - 1])) {
       end--;
     }
     if (begin >= end) {
       throw new ParseException();
     } else {
-      return string.substring(begin, end);
+      return new String(Arrays.copyOfRange(bytes, begin, end), StandardCharsets.UTF_8);//string.substring(begin, end);
     }
   }
 
@@ -79,19 +80,20 @@ public class RobotsParser extends Parser {
   private static void log(
       final Level level,
       final String message,
-      final String robotsTxtBody,
+      final byte[] robotsTxtBodyBytes,
       final int lineBegin,
       final int lineEnd,
       final int lineNumber) {
     logger.at(level).log(
-        "%s%nAt line %d:%n%s\t", message, lineNumber, robotsTxtBody.substring(lineBegin, lineEnd));
+        "%s%nAt line %d:%n%s\t", message, lineNumber,
+        new String(Arrays.copyOfRange(robotsTxtBodyBytes, lineBegin, lineEnd)));
   }
 
   /**
    * Extracts value from robots.txt body and trims it to {@link this#valueMaxLengthBytes} bytes if
    * necessary. Most of parameters are used for logging.
    *
-   * @param robotsTxtBody contents of robots.txt file
+   * @param robotsTxtBodyBytes contents of robots.txt file
    * @param separator index of separator between key and value
    * @param limit index of key and value ending
    * @param lineBegin index of line beginning
@@ -101,14 +103,14 @@ public class RobotsParser extends Parser {
    * @throws ParseException if line limits are invalid
    */
   private String getValue(
-      final String robotsTxtBody,
+      final byte[] robotsTxtBodyBytes,
       final int separator,
       final int limit,
       final int lineBegin,
       final int lineEnd,
       final int lineNumber)
       throws ParseException {
-    String value = trimBounded(robotsTxtBody, separator + 1, limit);
+    String value = trimBounded(robotsTxtBodyBytes, separator + 1, limit);
 
     // Google-specific optimization: since no search engine will process more than 2083 bytes
     // per URL all values are trimmed to fit this size.
@@ -122,7 +124,7 @@ public class RobotsParser extends Parser {
       log(
           Level.INFO,
           "Value truncated to " + valueMaxLengthBytes + " bytes.",
-          robotsTxtBody,
+          robotsTxtBodyBytes,
           lineBegin,
           lineEnd,
           lineNumber);
@@ -136,25 +138,25 @@ public class RobotsParser extends Parser {
   }
 
   private void parseLine(
-      final String robotsTxtBody, final int lineBegin, final int lineEnd, final int lineNumber) {
+      final byte[] robotsTxtBodyBytes, final int lineBegin, final int lineEnd, final int lineNumber) {
     int limit = lineEnd;
     int separator = lineEnd;
     int whitespaceSeparator = lineEnd;
     boolean hasContents = false;
 
     for (int i = lineBegin; i < lineEnd; i++) {
-      final char ch = robotsTxtBody.charAt(i);
-      if (ch == '#') {
+      final byte b = robotsTxtBodyBytes[i];
+      if (b == '#') {
         limit = i;
         break;
       }
-      if (!isWhitespace(ch)) {
+      if (!isWhitespace((char) b)) {
         hasContents = true;
       }
-      if (isWhitespace(ch) && hasContents && whitespaceSeparator == lineEnd) {
+      if (isWhitespace((char) b) && hasContents && whitespaceSeparator == lineEnd) {
         whitespaceSeparator = i;
       }
-      if (separator == lineEnd && ch == ':') {
+      if (separator == lineEnd && b == ':') {
         separator = i;
       }
     }
@@ -166,14 +168,14 @@ public class RobotsParser extends Parser {
         log(
             Level.INFO,
             "Assuming whitespace as a separator.",
-            robotsTxtBody,
+            robotsTxtBodyBytes,
             lineBegin,
             lineEnd,
             lineNumber);
         separator = whitespaceSeparator;
       } else {
         if (hasContents) {
-          log(Level.WARNING, "No separator found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+          log(Level.WARNING, "No separator found.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
         }
         return;
       }
@@ -181,27 +183,31 @@ public class RobotsParser extends Parser {
 
     final String key;
     try {
-      key = trimBounded(robotsTxtBody, lineBegin, separator);
+      key = trimBounded(robotsTxtBodyBytes, lineBegin, separator);
     } catch (ParseException e) {
-      log(Level.WARNING, "No key found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "No key found.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
       return;
     }
     String value;
     try {
-      value = getValue(robotsTxtBody, separator, limit, lineBegin, lineEnd, lineNumber);
+      value = getValue(robotsTxtBodyBytes, separator, limit, lineBegin, lineEnd, lineNumber);
     } catch (final ParseException e) {
-      log(Level.WARNING, "No value found.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "No value found.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
       return;
     }
     final DirectiveType directiveType = parseDirective(key);
     if (directiveType == DirectiveType.UNKNOWN) {
-      log(Level.WARNING, "Unknown key.", robotsTxtBody, lineBegin, lineEnd, lineNumber);
+      log(Level.WARNING, "Unknown key.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
     }
     parseHandler.handleDirective(directiveType, value);
   }
 
   @Override
   Matcher parse(String robotsTxtBody) {
+    final byte[] robotsTxtBodyBytes = robotsTxtBody.getBytes(StandardCharsets.UTF_8);
+    final byte[] bomUtf8 = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+    int bomPos = 0;
+
     int posBegin = 0;
     int posEnd = 0;
     int lineNumber = 0;
@@ -211,17 +217,27 @@ public class RobotsParser extends Parser {
 
     // Iteration over characters is preferred over utilities that split text into lines to avoid
     // having to create additional Strings and comply with line breaking defined in standard.
-    for (int i = 0; i < robotsTxtBody.length(); i++) {
-      final char ch = robotsTxtBody.charAt(i);
+    for (int i = 0; i < robotsTxtBodyBytes.length; i++) {
+      final byte b = robotsTxtBodyBytes[i];
 
-      if (ch != '\n' && ch != '\r') {
+      // Google-specific optimization: UTF-8 byte order marks should never
+      // appear in a robots.txt file, but they do nevertheless. Skipping
+      // possible BOM-prefix in the first bytes of the input.
+      if (bomPos < bomUtf8.length && b == bomUtf8[bomPos++]) {
+        posBegin++;
+        posEnd++;
+        continue;
+      }
+      bomPos = bomUtf8.length;
+
+      if (b != '\n' && b != '\r') {
         posEnd++;
       } else {
-        if (posBegin != posEnd || !previousWasCarriageReturn || ch != '\n') {
-          parseLine(robotsTxtBody, posBegin, posEnd, ++lineNumber);
+        if (posBegin != posEnd || !previousWasCarriageReturn || b != '\n') {
+          parseLine(robotsTxtBodyBytes, posBegin, posEnd, ++lineNumber);
         }
         posBegin = posEnd = i + 1;
-        previousWasCarriageReturn = ch == '\r';
+        previousWasCarriageReturn = b == '\r';
       }
     }
 
