@@ -47,9 +47,8 @@ public class RobotsParseHandler implements ParseHandler {
   }
 
   /**
-   * Canonicalize paths: escape characters outside of US-ASCII charset
-   * (e.g. /SanJoséSellers ==> /Sanjos%C3%A9Sellers) and normalize escape-characters
-   * (e.g. %aa ==> %AA)
+   * Canonicalize paths: escape characters outside of US-ASCII charset (e.g. /SanJoséSellers ==>
+   * /Sanjos%C3%A9Sellers) and normalize escape-characters (e.g. %aa ==> %AA)
    *
    * @param path Path to canonicalize.
    * @return escaped and normalized path

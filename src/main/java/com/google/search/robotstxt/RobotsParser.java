@@ -61,7 +61,9 @@ public class RobotsParser extends Parser {
     if (begin >= end) {
       throw new ParseException();
     } else {
-      return new String(Arrays.copyOfRange(bytes, begin, end), StandardCharsets.UTF_8);//string.substring(begin, end);
+      return new String(
+          Arrays.copyOfRange(bytes, begin, end),
+          StandardCharsets.UTF_8);
     }
   }
 
@@ -85,7 +87,9 @@ public class RobotsParser extends Parser {
       final int lineEnd,
       final int lineNumber) {
     logger.at(level).log(
-        "%s%nAt line %d:%n%s\t", message, lineNumber,
+        "%s%nAt line %d:%n%s\t",
+        message,
+        lineNumber,
         new String(Arrays.copyOfRange(robotsTxtBodyBytes, lineBegin, lineEnd)));
   }
 
@@ -138,7 +142,10 @@ public class RobotsParser extends Parser {
   }
 
   private void parseLine(
-      final byte[] robotsTxtBodyBytes, final int lineBegin, final int lineEnd, final int lineNumber) {
+      final byte[] robotsTxtBodyBytes,
+      final int lineBegin,
+      final int lineEnd,
+      final int lineNumber) {
     int limit = lineEnd;
     int separator = lineEnd;
     int whitespaceSeparator = lineEnd;
@@ -175,7 +182,13 @@ public class RobotsParser extends Parser {
         separator = whitespaceSeparator;
       } else {
         if (hasContents) {
-          log(Level.WARNING, "No separator found.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
+          log(
+              Level.WARNING,
+              "No separator found.",
+              robotsTxtBodyBytes,
+              lineBegin,
+              lineEnd,
+              lineNumber);
         }
         return;
       }
