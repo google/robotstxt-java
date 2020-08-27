@@ -14,6 +14,8 @@
 
 package com.google.search.robotstxt;
 
+import java.nio.charset.StandardCharsets;
+
 /** Implementation of parsing strategy used in robots.txt parsing. */
 public class RobotsParseHandler implements ParseHandler {
   protected RobotsContents robotsContents;
@@ -44,6 +46,54 @@ public class RobotsParseHandler implements ParseHandler {
     currentGroup.addUserAgent(value);
   }
 
+  /**
+   * Canonicalize paths: escape characters outside of US-ASCII charset
+   * (e.g. /SanJoséSellers ==> /Sanjos%C3%A9Sellers) and normalize escape-characters
+   * (e.g. %aa ==> %AA)
+   *
+   * @param path Path to canonicalize.
+   * @return escaped and normalized path
+   */
+  private static String maybeEscapePattern(final String path) {
+    final byte[] bytes = path.getBytes(StandardCharsets.UTF_8);
+
+    int unescapedCount = 0;
+    boolean notCapitalized = false;
+
+    // Check if any changes required
+    for (int i = 0; i < bytes.length; i++) {
+      if (bytes[i] == '%' && Character.isDigit(bytes[i + 1]) && Character.isDigit(bytes[i + 2])) {
+        if (Character.isLowerCase(bytes[i + 1]) || Character.isLowerCase(bytes[i + 2])) {
+          notCapitalized = true;
+        }
+        i += 2;
+      } else if ((bytes[i] & 0x80) != 0) {
+        unescapedCount++;
+      }
+    }
+
+    // Return if no changes needed
+    if (unescapedCount == 0 && !notCapitalized) {
+      return path;
+    }
+
+    final StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < bytes.length; i++) {
+      if (bytes[i] == '%' && Character.isDigit(bytes[i + 1]) && Character.isDigit(bytes[i + 2])) {
+        stringBuilder.append((char) bytes[i++]);
+        stringBuilder.append(Character.toUpperCase(bytes[i++]));
+        stringBuilder.append(Character.toUpperCase(bytes[i]));
+      } else if ((bytes[i] & 0x80) != 0) {
+        stringBuilder.append('%');
+        stringBuilder.append(Integer.toHexString((bytes[i] >> 4) & 0xf).toUpperCase());
+        stringBuilder.append(Integer.toHexString(bytes[i] & 0xf).toUpperCase());
+      } else {
+        stringBuilder.append((char) bytes[i]);
+      }
+    }
+    return stringBuilder.toString();
+  }
+
   @Override
   public void handleDirective(
       final Parser.DirectiveType directiveType, final String directiveValue) {
@@ -57,7 +107,7 @@ public class RobotsParseHandler implements ParseHandler {
       case DISALLOW:
         {
           if (currentGroup.isGlobal() || currentGroup.getUserAgents().size() > 0) {
-            currentGroup.addRule(directiveType, directiveValue);
+            currentGroup.addRule(directiveType, maybeEscapePattern(directiveValue));
           }
           break;
         }
