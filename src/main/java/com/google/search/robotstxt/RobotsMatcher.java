@@ -70,7 +70,12 @@ public class RobotsMatcher implements Matcher {
 
   private static String getPath(final String url) throws MatchException {
     try {
-      String path = new URL(url).getPath();
+      final URL parsedUrl = new URL(url);
+      String path = parsedUrl.getPath();
+      final String args = new URL(url).getQuery();
+      if (args != null) {
+        path += "?" + args;
+      }
 
       // Google-specific optimization: 'index.htm' and 'index.html' are normalized to '/'.
       final int slashPos = path.lastIndexOf('/');
