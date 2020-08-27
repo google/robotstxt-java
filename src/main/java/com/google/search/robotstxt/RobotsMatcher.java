@@ -70,7 +70,13 @@ public class RobotsMatcher implements Matcher {
 
   private static String getPath(final String url) throws MatchException {
     try {
-      final URL parsedUrl = new URL(url);
+      final URL parsedUrl;
+      try {
+        parsedUrl = new URL(url);
+      } catch (final MalformedURLException e) {
+        logger.atWarning().log("Malformed URL: \"%s\", replaced with \"/\"", url);
+        return "/";
+      }
       String path = parsedUrl.getPath();
       final String args = new URL(url).getQuery();
       if (args != null) {
