@@ -20,19 +20,19 @@ import java.nio.charset.StandardCharsets;
 public class RobotsParseHandler implements ParseHandler {
   protected RobotsContents robotsContents;
   private RobotsContents.Group currentGroup;
+  private boolean foundContent;
 
   @Override
   public void handleStart() {
     robotsContents = new RobotsContents();
     currentGroup = new RobotsContents.Group();
+    foundContent = false;
   }
 
   private void flushCompleteGroup(boolean createNew) {
-    if (currentGroup.getRules().size() > 0) {
-      robotsContents.addGroup(currentGroup);
-      if (createNew) {
-        currentGroup = new RobotsContents.Group();
-      }
+    robotsContents.addGroup(currentGroup);
+    if (createNew) {
+      currentGroup = new RobotsContents.Group();
     }
   }
 
@@ -42,7 +42,10 @@ public class RobotsParseHandler implements ParseHandler {
   }
 
   private void handleUserAgent(final String value) {
-    flushCompleteGroup(true);
+    if (foundContent) {
+      flushCompleteGroup(true);
+      foundContent = false;
+    }
     currentGroup.addUserAgent(value);
   }
 
@@ -105,6 +108,7 @@ public class RobotsParseHandler implements ParseHandler {
       case ALLOW:
       case DISALLOW:
         {
+          foundContent = true;
           if (currentGroup.isGlobal() || currentGroup.getUserAgents().size() > 0) {
             currentGroup.addRule(directiveType, maybeEscapePattern(directiveValue));
           }
@@ -113,7 +117,7 @@ public class RobotsParseHandler implements ParseHandler {
       case SITEMAP:
       case UNKNOWN:
         {
-          // Ignored.
+          foundContent = true;
           break;
         }
     }

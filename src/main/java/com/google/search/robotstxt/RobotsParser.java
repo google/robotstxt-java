@@ -199,16 +199,19 @@ public class RobotsParser extends Parser {
       log(Level.WARNING, "No key found.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
       return;
     }
+
+    DirectiveType directiveType = parseDirective(key);
+    if (directiveType == DirectiveType.UNKNOWN) {
+      log(Level.WARNING, "Unknown key.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
+    }
+
     String value;
     try {
       value = getValue(robotsTxtBodyBytes, separator, limit, lineBegin, lineEnd, lineNumber);
     } catch (final ParseException e) {
       log(Level.WARNING, "No value found.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
-      return;
-    }
-    final DirectiveType directiveType = parseDirective(key);
-    if (directiveType == DirectiveType.UNKNOWN) {
-      log(Level.WARNING, "Unknown key.", robotsTxtBodyBytes, lineBegin, lineEnd, lineNumber);
+      value = "";
+      directiveType = DirectiveType.UNKNOWN;
     }
     parseHandler.handleDirective(directiveType, value);
   }
