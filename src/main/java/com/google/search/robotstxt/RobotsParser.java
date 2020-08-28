@@ -218,7 +218,7 @@ public class RobotsParser extends Parser {
 
   @Override
   Matcher parse(String robotsTxtBody) {
-    final byte[] robotsTxtBodyBytes = robotsTxtBody.getBytes(StandardCharsets.UTF_8);
+    final byte[] robotsTxtBodyBytes = (robotsTxtBody + '\0').getBytes(StandardCharsets.UTF_8);
     final byte[] bomUtf8 = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
     int bomPos = 0;
 
@@ -244,7 +244,7 @@ public class RobotsParser extends Parser {
       }
       bomPos = bomUtf8.length;
 
-      if (b != '\n' && b != '\r') {
+      if (b != '\n' && b != '\r' && b != '\0') {
         posEnd++;
       } else {
         if (posBegin != posEnd || !previousWasCarriageReturn || b != '\n') {
