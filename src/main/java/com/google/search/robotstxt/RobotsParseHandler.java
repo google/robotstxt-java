@@ -14,10 +14,13 @@
 
 package com.google.search.robotstxt;
 
+import com.google.common.flogger.FluentLogger;
 import java.nio.charset.StandardCharsets;
 
 /** Implementation of parsing strategy used in robots.txt parsing. */
 public class RobotsParseHandler implements ParseHandler {
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
   protected RobotsContents robotsContents;
   private RobotsContents.Group currentGroup;
   private boolean foundContent;
@@ -110,7 +113,27 @@ public class RobotsParseHandler implements ParseHandler {
         {
           foundContent = true;
           if (currentGroup.isGlobal() || currentGroup.getUserAgents().size() > 0) {
+            final String path = maybeEscapePattern(directiveValue);
             currentGroup.addRule(directiveType, maybeEscapePattern(directiveValue));
+
+            if (directiveType == Parser.DirectiveType.ALLOW) {
+              // Google-specific optimization: 'index.htm' and 'index.html' are normalized to '/'.
+              final int slashPos = path.lastIndexOf('/');
+
+              if (slashPos != -1) {
+                final String fileName = path.substring(slashPos + 1);
+                if ("index.htm".equals(fileName) || "index.html".equals(fileName)) {
+                  final String normalizedPath = path.substring(0, slashPos + 1) + '$';
+
+                  if (!currentGroup.hasRule(Parser.DirectiveType.ALLOW, normalizedPath)) {
+                    logger.atInfo().log(
+                        "Allowing normalized path: \"%s\" -> \"%s\"",
+                        directiveValue, normalizedPath);
+                    currentGroup.addRule(Parser.DirectiveType.ALLOW, normalizedPath);
+                  }
+                }
+              }
+            }
           }
           break;
         }

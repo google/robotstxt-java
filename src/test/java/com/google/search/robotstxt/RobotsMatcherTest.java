@@ -406,12 +406,12 @@ public class RobotsMatcherTest {
 
     try {
       final Matcher matcher = parse(robotsTxtBody);
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[0]));
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[1]));
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[2]));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[0]));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[1]));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[2]));
       assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[3]));
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[4]));
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[5]));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[4]));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[5]));
     } catch (final MatchException e) {
       fail("Matcher has thrown an exception: " + e.getMessage());
     }

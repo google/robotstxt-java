@@ -83,20 +83,6 @@ public class RobotsMatcher implements Matcher {
         path += "?" + args;
       }
 
-      // Google-specific optimization: 'index.htm' and 'index.html' are normalized to '/'.
-      final int slashPos = path.lastIndexOf('/');
-
-      if (slashPos != -1) {
-        final String fileName = path.substring(slashPos + 1);
-        if ("index.htm".equals(fileName) || "index.html".equals(fileName)) {
-          final String newPath = path.substring(0, slashPos + 1);
-
-          logger.atInfo().log("Omitted index page (\"%s\" -> \"%s\")", path, newPath);
-
-          path = newPath;
-        }
-      }
-
       return path;
     } catch (final MalformedURLException e) {
       throw new MatchException("Malformed URL was given.", e);
