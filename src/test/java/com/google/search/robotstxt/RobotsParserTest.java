@@ -234,4 +234,24 @@ public class RobotsParserTest {
         .getGroups()
         .forEach(expectedGroup -> assertThat(expectedGroup).isIn(actualContents.getGroups()));
   }
+
+  /** Verifies: Path normalisation corner case */
+  @Test
+  public void testPathNormalisationCornerCase() {
+    final String robotsTxtBody =
+        "user-agent: FooBot\n" + "disallow: /foo?bar%aa%\n" + "disallow: /foo?bar%aa%a\n";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Collections.singletonList(
+                new RobotsContents.Group(
+                    Collections.singletonList("FooBot"),
+                    Arrays.asList(
+                        new RobotsContents.Group.Rule(
+                            Parser.DirectiveType.DISALLOW, "/foo?bar%AA%"),
+                        new RobotsContents.Group.Rule(
+                            Parser.DirectiveType.DISALLOW, "/foo?bar%AA%a")))));
+
+    parseAndValidate(robotsTxtBody, expectedContents);
+  }
 }

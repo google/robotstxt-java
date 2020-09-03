@@ -52,6 +52,10 @@ public class RobotsParseHandler implements ParseHandler {
     currentGroup.addUserAgent(value);
   }
 
+  private static boolean isHexChar(final byte b) {
+    return Character.isDigit(b) || ('a' <= b && b <= 'f') || ('A' <= b && b <= 'F');
+  }
+
   /**
    * Canonicalize paths: escape characters outside of US-ASCII charset (e.g. /SanJoséSellers ==>
    * /Sanjos%C3%A9Sellers) and normalize escape-characters (e.g. %aa ==> %AA)
@@ -67,7 +71,10 @@ public class RobotsParseHandler implements ParseHandler {
 
     // Check if any changes required
     for (int i = 0; i < bytes.length; i++) {
-      if (bytes[i] == '%' && Character.isDigit(bytes[i + 1]) && Character.isDigit(bytes[i + 2])) {
+      if (i < bytes.length - 2
+          && bytes[i] == '%'
+          && isHexChar(bytes[i + 1])
+          && isHexChar(bytes[i + 2])) {
         if (Character.isLowerCase(bytes[i + 1]) || Character.isLowerCase(bytes[i + 2])) {
           notCapitalized = true;
         }
@@ -84,10 +91,13 @@ public class RobotsParseHandler implements ParseHandler {
 
     final StringBuilder stringBuilder = new StringBuilder();
     for (int i = 0; i < bytes.length; i++) {
-      if (bytes[i] == '%' && Character.isDigit(bytes[i + 1]) && Character.isDigit(bytes[i + 2])) {
+      if (i < bytes.length - 2
+          && bytes[i] == '%'
+          && isHexChar(bytes[i + 1])
+          && isHexChar(bytes[i + 2])) {
         stringBuilder.append((char) bytes[i++]);
-        stringBuilder.append(Character.toUpperCase(bytes[i++]));
-        stringBuilder.append(Character.toUpperCase(bytes[i]));
+        stringBuilder.append((char) Character.toUpperCase(bytes[i++]));
+        stringBuilder.append((char) Character.toUpperCase(bytes[i]));
       } else if ((bytes[i] & 0x80) != 0) {
         stringBuilder.append('%');
         stringBuilder.append(Integer.toHexString((bytes[i] >> 4) & 0xf).toUpperCase());
@@ -114,7 +124,7 @@ public class RobotsParseHandler implements ParseHandler {
           foundContent = true;
           if (currentGroup.isGlobal() || currentGroup.getUserAgents().size() > 0) {
             final String path = maybeEscapePattern(directiveValue);
-            currentGroup.addRule(directiveType, maybeEscapePattern(directiveValue));
+            currentGroup.addRule(directiveType, path);
 
             if (directiveType == Parser.DirectiveType.ALLOW) {
               // Google-specific optimization: 'index.htm' and 'index.html' are normalized to '/'.
