@@ -36,9 +36,9 @@ public class RobotsParserTest {
    */
   private static void parseAndValidate(
       final String robotsTxtBody, final RobotsContents expectedContents) {
-    Parser parser = new RobotsParser(new RobotsParseHandler());
-    Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
-    RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
+    final Parser parser = new RobotsParser(new RobotsParseHandler());
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    final RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents
         .getGroups()
@@ -226,9 +226,9 @@ public class RobotsParserTest {
                     Collections.singletonList(
                         new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/foo/b")))));
 
-    Parser parser = new RobotsParser(new RobotsParseHandler(), 8);
-    Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
-    RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
+    final Parser parser = new RobotsParser(new RobotsParseHandler(), 8);
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    final RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents
         .getGroups()
