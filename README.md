@@ -19,6 +19,8 @@ $ sudo apt-get install maven
 
 ### Build it
 
+#### Using Maven
+
 Standard maven commands work here.
 
 ```
@@ -31,7 +33,19 @@ Or if you want a build from scratch:
 $ mvn clean install
 ```
 
+#### Using Maven Assembly Plugin
+
+Alternatively, you can compile the entire project into a single JAR using the following command:
+
+```
+$ mvn clean compile assembly:single
+```
+
+You can find the result in `target` directory. 
+
 ### Run it
+
+#### Using Maven
 
 Following commands will run an application that parses given robots.txt file and print a matching
 verdict: `ALLOWED` or `DISALLOWED` (exit codes are `0` and `1` respectively). 
@@ -51,6 +65,21 @@ If you want the application to read an existing robots.txt file, use flag `-f` (
 
 ```
 $ mvn exec:java -Dexec.mainClass=com.google.search.robotstxt.RobotsParserApp -Dexec.args="--agent FooBot --url http://foo.com/bar --file path/to/robots.txt"
+```
+
+#### From JAR
+
+If you have built the project into JAR, you can run it from there (reading robots.txt from
+standard input):
+
+```
+$ java -jar target/robotstxt-java-1.0-SNAPSHOT-jar-with-dependencies.jar --agent FooBot --url http://foo.com/bar
+```
+
+Or (reading from file):
+
+```
+$ java -jar target/robotstxt-java-1.0-SNAPSHOT-jar-with-dependencies.jar --agent FooBot --url http://foo.com/bar --file path/to/robots.txt
 ```
 
 ## Source Code Headers
