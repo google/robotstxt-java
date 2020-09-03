@@ -71,6 +71,13 @@
       <artifactId>picocli</artifactId>
       <version>4.4.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>29.0-jre</version>
+    </dependency>
+
   </dependencies>
 
   <build>

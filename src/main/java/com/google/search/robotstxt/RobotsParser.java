@@ -217,8 +217,7 @@ public class RobotsParser extends Parser {
   }
 
   @Override
-  Matcher parse(String robotsTxtBody) {
-    final byte[] robotsTxtBodyBytes = (robotsTxtBody + '\0').getBytes(StandardCharsets.UTF_8);
+  Matcher parse(byte[] robotsTxtBodyBytes) {
     final byte[] bomUtf8 = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
     int bomPos = 0;
 
@@ -231,8 +230,8 @@ public class RobotsParser extends Parser {
 
     // Iteration over characters is preferred over utilities that split text into lines to avoid
     // having to create additional Strings and comply with line breaking defined in standard.
-    for (int i = 0; i < robotsTxtBodyBytes.length; i++) {
-      final byte b = robotsTxtBodyBytes[i];
+    for (int i = 0; i <= robotsTxtBodyBytes.length; i++) {
+      final byte b = (i == robotsTxtBodyBytes.length) ? (byte) '\0' : robotsTxtBodyBytes[i];
 
       // Google-specific optimization: UTF-8 byte order marks should never
       // appear in a robots.txt file, but they do nevertheless. Skipping

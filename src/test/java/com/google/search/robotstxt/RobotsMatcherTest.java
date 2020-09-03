@@ -18,13 +18,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 
 /** Unit tests validating matching behavior. */
 public class RobotsMatcherTest {
   private static Matcher parse(final String robotsTxtBody) {
     final Parser parser = new RobotsParser(new RobotsParseHandler());
-    return parser.parse(robotsTxtBody);
+    return parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
   }
 
   /** Verifies: parsing an matching robots.txt containing single group */

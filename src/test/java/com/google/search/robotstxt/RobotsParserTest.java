@@ -16,6 +16,7 @@ package com.google.search.robotstxt;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class RobotsParserTest {
   private static void parseAndValidate(
       final String robotsTxtBody, final RobotsContents expectedContents) {
     Parser parser = new RobotsParser(new RobotsParseHandler());
-    Matcher matcher = parser.parse(robotsTxtBody);
+    Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
     RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents
@@ -226,7 +227,7 @@ public class RobotsParserTest {
                         new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/foo/b")))));
 
     Parser parser = new RobotsParser(new RobotsParseHandler(), 8);
-    Matcher matcher = parser.parse(robotsTxtBody);
+    Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
     RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents

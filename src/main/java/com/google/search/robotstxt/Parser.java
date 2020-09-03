@@ -42,8 +42,8 @@ public abstract class Parser {
   /**
    * Method to parse robots.txt file into a matcher.
    *
-   * @param robotsTxtBody body of robots.txt file to parse
+   * @param robotsTxtBodyBytes body of robots.txt file to parse
    * @return matcher representing given robots.txt file
    */
-  abstract Matcher parse(final String robotsTxtBody);
+  abstract Matcher parse(final byte[] robotsTxtBodyBytes);
 }
