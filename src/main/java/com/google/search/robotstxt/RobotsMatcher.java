@@ -68,25 +68,21 @@ public class RobotsMatcher implements Matcher {
     return robotsContents;
   }
 
-  private static String getPath(final String url) throws MatchException {
+  private static String getPath(final String url) {
+    final URL parsedUrl;
     try {
-      final URL parsedUrl;
-      try {
-        parsedUrl = new URL(url);
-      } catch (final MalformedURLException e) {
-        logger.atWarning().log("Malformed URL: \"%s\", replaced with \"/\"", url);
-        return "/";
-      }
-      String path = parsedUrl.getPath();
-      final String args = new URL(url).getQuery();
-      if (args != null) {
-        path += "?" + args;
-      }
-
-      return path;
+      parsedUrl = new URL(url);
     } catch (final MalformedURLException e) {
-      throw new MatchException("Malformed URL was given.", e);
+      logger.atWarning().log("Malformed URL: \"%s\", replaced with \"/\"", url);
+      return "/";
     }
+    String path = parsedUrl.getPath();
+    final String args = parsedUrl.getQuery();
+    if (args != null) {
+      path += "?" + args;
+    }
+
+    return path;
   }
 
   /**
@@ -185,22 +181,19 @@ public class RobotsMatcher implements Matcher {
   }
 
   @Override
-  public boolean allowedByRobots(final List<String> userAgents, final String url)
-      throws MatchException {
+  public boolean allowedByRobots(final List<String> userAgents, final String url) {
     final String path = getPath(url);
     Map.Entry<Match, Match> matches = computeMatchPriorities(userAgents, path);
     return allowVerdict(matches.getKey(), matches.getValue());
   }
 
   @Override
-  public boolean singleAgentAllowedByRobots(final String userAgent, final String url)
-      throws MatchException {
+  public boolean singleAgentAllowedByRobots(final String userAgent, final String url) {
     return allowedByRobots(Collections.singletonList(userAgent), url);
   }
 
   @Override
-  public boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url)
-      throws MatchException {
+  public boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url) {
     final String path = getPath(url);
     Map.Entry<Match, Match> matches = computeMatchPriorities(userAgents, path, true);
     return allowVerdict(matches.getKey(), matches.getValue());

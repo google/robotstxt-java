@@ -25,9 +25,8 @@ public interface Matcher {
    * @param userAgents interested user agents
    * @param url target URL
    * @return {@code true} iff verdict is ALLOWED
-   * @throws MatchException when given URL is malformed
    */
-  boolean allowedByRobots(final List<String> userAgents, final String url) throws MatchException;
+  boolean allowedByRobots(final List<String> userAgents, final String url);
 
   /**
    * Check whether given user agent is allowed to visit given URL based on robots.txt which this
@@ -36,10 +35,8 @@ public interface Matcher {
    * @param userAgent interested user agent
    * @param url target URL
    * @return {@code true} iff verdict is ALLOWED
-   * @throws MatchException when given URL is malformed
    */
-  boolean singleAgentAllowedByRobots(final String userAgent, final String url)
-      throws MatchException;
+  boolean singleAgentAllowedByRobots(final String userAgent, final String url);
 
   /**
    * Check whether at least one of given user agents is allowed to visit given URL based on
@@ -48,8 +45,6 @@ public interface Matcher {
    * @param userAgents interested user agents
    * @param url target URL
    * @return {@code true} iff verdict is ALLOWED
-   * @throws MatchException when given URL is malformed
    */
-  boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url)
-      throws MatchException;
+  boolean ignoreGlobalAllowedByRobots(final List<String> userAgents, final String url);
 }

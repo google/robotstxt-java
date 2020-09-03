@@ -103,12 +103,7 @@ public class RobotsParserApp implements Callable<Integer> {
     final RobotsMatcher matcher = (RobotsMatcher) parser.parse(robotsTxtContents);
 
     final boolean parseResult;
-    try {
-      parseResult = matcher.allowedByRobots(agents, url);
-    } catch (final MatchException e) {
-      logError(e);
-      return 2;
-    }
+    parseResult = matcher.allowedByRobots(agents, url);
 
     if (parseResult) {
       System.out.println("ALLOWED");
