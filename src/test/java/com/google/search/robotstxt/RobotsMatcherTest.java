@@ -16,15 +16,15 @@ package com.google.search.robotstxt;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 
 /** Unit tests validating matching behavior. */
 public class RobotsMatcherTest {
   private static Matcher parse(final String robotsTxtBody) {
     final Parser parser = new RobotsParser(new RobotsParseHandler());
-    return parser.parse(robotsTxtBody);
+    return parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
   }
 
   /** Verifies: parsing an matching robots.txt containing single group */
@@ -35,15 +35,11 @@ public class RobotsMatcherTest {
 
     final String url = "http://foo.bar/x/y";
 
-    try {
-      final Matcher matcherCorrect = parse(robotsTxtBodyCorrect);
-      assertFalse(matcherCorrect.singleAgentAllowedByRobots("FooBot", url));
+    final Matcher matcherCorrect = parse(robotsTxtBodyCorrect);
+    assertFalse(matcherCorrect.singleAgentAllowedByRobots("FooBot", url));
 
-      final Matcher matcherIncorrect = parse(robotsTxtBodyIncorrect);
-      assertTrue(matcherIncorrect.singleAgentAllowedByRobots("FooBot", url));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcherIncorrect = parse(robotsTxtBodyIncorrect);
+    assertTrue(matcherIncorrect.singleAgentAllowedByRobots("FooBot", url));
   }
 
   /**
@@ -76,23 +72,19 @@ public class RobotsMatcherTest {
     final String urlZd = "http://foo.bar/z/d";
     final String urlFooBar = "http://foo.bar/foo/bar/";
 
-    try {
-      final Matcher matcher = parse(robotsTxtBody);
+    final Matcher matcher = parse(robotsTxtBody);
 
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urlXb));
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urlZd));
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urlYc));
-      assertTrue(matcher.singleAgentAllowedByRobots("BarBot", urlYc));
-      assertTrue(matcher.singleAgentAllowedByRobots("BarBot", urlWa));
-      assertFalse(matcher.singleAgentAllowedByRobots("BarBot", urlZd));
-      assertTrue(matcher.singleAgentAllowedByRobots("BazBot", urlZd));
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urlXb));
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urlZd));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urlYc));
+    assertTrue(matcher.singleAgentAllowedByRobots("BarBot", urlYc));
+    assertTrue(matcher.singleAgentAllowedByRobots("BarBot", urlWa));
+    assertFalse(matcher.singleAgentAllowedByRobots("BarBot", urlZd));
+    assertTrue(matcher.singleAgentAllowedByRobots("BazBot", urlZd));
 
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urlFooBar));
-      assertFalse(matcher.singleAgentAllowedByRobots("BarBot", urlFooBar));
-      assertFalse(matcher.singleAgentAllowedByRobots("BazBot", urlFooBar));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urlFooBar));
+    assertFalse(matcher.singleAgentAllowedByRobots("BarBot", urlFooBar));
+    assertFalse(matcher.singleAgentAllowedByRobots("BazBot", urlFooBar));
   }
 
   /** Verifies: directives case insensitivity. */
@@ -105,21 +97,17 @@ public class RobotsMatcherTest {
     final String urlAllowed = "http://foo.bar/x/y";
     final String urlDisallowed = "http://foo.bar/a/b";
 
-    try {
-      final Matcher matcherUpper = parse(robotsTxtBodyUpper);
-      assertTrue(matcherUpper.singleAgentAllowedByRobots("FooBot", urlAllowed));
-      assertFalse(matcherUpper.singleAgentAllowedByRobots("FooBot", urlDisallowed));
+    final Matcher matcherUpper = parse(robotsTxtBodyUpper);
+    assertTrue(matcherUpper.singleAgentAllowedByRobots("FooBot", urlAllowed));
+    assertFalse(matcherUpper.singleAgentAllowedByRobots("FooBot", urlDisallowed));
 
-      final Matcher matcherLower = parse(robotsTxtBodyLower);
-      assertTrue(matcherLower.singleAgentAllowedByRobots("FooBot", urlAllowed));
-      assertFalse(matcherLower.singleAgentAllowedByRobots("FooBot", urlDisallowed));
+    final Matcher matcherLower = parse(robotsTxtBodyLower);
+    assertTrue(matcherLower.singleAgentAllowedByRobots("FooBot", urlAllowed));
+    assertFalse(matcherLower.singleAgentAllowedByRobots("FooBot", urlDisallowed));
 
-      final Matcher matcherRandom = parse(robotsTxtBodyRandom);
-      assertTrue(matcherRandom.singleAgentAllowedByRobots("FooBot", urlAllowed));
-      assertFalse(matcherRandom.singleAgentAllowedByRobots("FooBot", urlDisallowed));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcherRandom = parse(robotsTxtBodyRandom);
+    assertTrue(matcherRandom.singleAgentAllowedByRobots("FooBot", urlAllowed));
+    assertFalse(matcherRandom.singleAgentAllowedByRobots("FooBot", urlDisallowed));
   }
 
   /** Verifies: user agent case insensitivity, user agent names convention compliance. */
@@ -132,27 +120,23 @@ public class RobotsMatcherTest {
     final String urlAllowed = "http://foo.bar/x/y";
     final String urlDisallowed = "http://foo.bar/a/b";
 
-    try {
-      final Matcher matcherUpper = parse(robotsTxtBodyUpper);
-      assertTrue(matcherUpper.singleAgentAllowedByRobots("Foo", urlAllowed));
-      assertTrue(matcherUpper.singleAgentAllowedByRobots("foo", urlAllowed));
-      assertFalse(matcherUpper.singleAgentAllowedByRobots("Foo", urlDisallowed));
-      assertFalse(matcherUpper.singleAgentAllowedByRobots("foo", urlDisallowed));
+    final Matcher matcherUpper = parse(robotsTxtBodyUpper);
+    assertTrue(matcherUpper.singleAgentAllowedByRobots("Foo", urlAllowed));
+    assertTrue(matcherUpper.singleAgentAllowedByRobots("foo", urlAllowed));
+    assertFalse(matcherUpper.singleAgentAllowedByRobots("Foo", urlDisallowed));
+    assertFalse(matcherUpper.singleAgentAllowedByRobots("foo", urlDisallowed));
 
-      final Matcher matcherLower = parse(robotsTxtBodyLower);
-      assertTrue(matcherLower.singleAgentAllowedByRobots("Foo", urlAllowed));
-      assertTrue(matcherLower.singleAgentAllowedByRobots("foo", urlAllowed));
-      assertFalse(matcherLower.singleAgentAllowedByRobots("Foo", urlDisallowed));
-      assertFalse(matcherLower.singleAgentAllowedByRobots("foo", urlDisallowed));
+    final Matcher matcherLower = parse(robotsTxtBodyLower);
+    assertTrue(matcherLower.singleAgentAllowedByRobots("Foo", urlAllowed));
+    assertTrue(matcherLower.singleAgentAllowedByRobots("foo", urlAllowed));
+    assertFalse(matcherLower.singleAgentAllowedByRobots("Foo", urlDisallowed));
+    assertFalse(matcherLower.singleAgentAllowedByRobots("foo", urlDisallowed));
 
-      final Matcher matcherRandom = parse(robotsTxtBodyRandom);
-      assertTrue(matcherRandom.singleAgentAllowedByRobots("Foo", urlAllowed));
-      assertTrue(matcherRandom.singleAgentAllowedByRobots("foo", urlAllowed));
-      assertFalse(matcherRandom.singleAgentAllowedByRobots("Foo", urlDisallowed));
-      assertFalse(matcherRandom.singleAgentAllowedByRobots("foo", urlDisallowed));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcherRandom = parse(robotsTxtBodyRandom);
+    assertTrue(matcherRandom.singleAgentAllowedByRobots("Foo", urlAllowed));
+    assertTrue(matcherRandom.singleAgentAllowedByRobots("foo", urlAllowed));
+    assertFalse(matcherRandom.singleAgentAllowedByRobots("Foo", urlDisallowed));
+    assertFalse(matcherRandom.singleAgentAllowedByRobots("foo", urlDisallowed));
   }
 
   /** Verifies: global rules. */
@@ -171,19 +155,15 @@ public class RobotsMatcherTest {
 
     final String url = "http://foo.bar/x/y";
 
-    try {
-      final Matcher matcherEmpty = parse(robotsTxtBodyEmpty);
-      assertTrue(matcherEmpty.singleAgentAllowedByRobots("FooBot", url));
+    final Matcher matcherEmpty = parse(robotsTxtBodyEmpty);
+    assertTrue(matcherEmpty.singleAgentAllowedByRobots("FooBot", url));
 
-      final Matcher matcherGlobal = parse(robotsTxtBodyGlobal);
-      assertTrue(matcherGlobal.singleAgentAllowedByRobots("FooBot", url));
-      assertFalse(matcherGlobal.singleAgentAllowedByRobots("BarBot", url));
+    final Matcher matcherGlobal = parse(robotsTxtBodyGlobal);
+    assertTrue(matcherGlobal.singleAgentAllowedByRobots("FooBot", url));
+    assertFalse(matcherGlobal.singleAgentAllowedByRobots("BarBot", url));
 
-      final Matcher matcherSpecific = parse(robotsTxtBodySpecific);
-      assertTrue(matcherSpecific.singleAgentAllowedByRobots("QuxBot", url));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcherSpecific = parse(robotsTxtBodySpecific);
+    assertTrue(matcherSpecific.singleAgentAllowedByRobots("QuxBot", url));
   }
 
   /**
@@ -196,13 +176,9 @@ public class RobotsMatcherTest {
 
     final String url = "http://foo.bar/x/y";
 
-    try {
-      final Matcher matcher = parse(robotsTxtBody);
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
-      assertFalse(matcher.singleAgentAllowedByRobots("BarBot", url));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcher = parse(robotsTxtBody);
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
+    assertFalse(matcher.singleAgentAllowedByRobots("BarBot", url));
   }
 
   /** Verifies: case sensitivity of URIs. */
@@ -213,15 +189,11 @@ public class RobotsMatcherTest {
 
     final String url = "http://foo.bar/x/y";
 
-    try {
-      final Matcher matcherUpper = parse(robotsTxtBodyUpper);
-      assertTrue(matcherUpper.singleAgentAllowedByRobots("FooBot", url));
+    final Matcher matcherUpper = parse(robotsTxtBodyUpper);
+    assertTrue(matcherUpper.singleAgentAllowedByRobots("FooBot", url));
 
-      final Matcher matcherLower = parse(robotsTxtBodyLower);
-      assertFalse(matcherLower.singleAgentAllowedByRobots("FooBot", url));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcherLower = parse(robotsTxtBodyLower);
+    assertFalse(matcherLower.singleAgentAllowedByRobots("FooBot", url));
   }
 
   /** Verifies: longest match strategy. */
@@ -233,44 +205,28 @@ public class RobotsMatcherTest {
       final String robotsTxtBody =
           "user-agent: FooBot\n" + "disallow: /x/page.html\n" + "allow: /x/\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", url));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", url));
     }
     {
       final String robotsTxtBody =
           "user-agent: FooBot\n" + "allow: /x/page.html\n" + "disallow: /x/\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/x/"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/x/"));
     }
     {
       final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: \n" + "allow: \n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
     }
     {
       final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /\n" + "allow: /\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
     }
     {
       final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /x\n" + "allow: /x/\n";
@@ -278,60 +234,40 @@ public class RobotsMatcherTest {
       final String url0 = "http://foo.bar/x";
       final String url1 = "http://foo.bar/x/";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", url0));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url1));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", url0));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url1));
     }
     {
       final String robotsTxtBody =
           "user-agent: FooBot\n" + "disallow: /x/page.html\n" + "allow: /x/page.html\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
     }
     {
       final String robotsTxtBody =
           "user-agent: FooBot\n" + "allow: /page\n" + "disallow: /*.html\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/page.html"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/page"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/page.html"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/page"));
     }
     {
       final String robotsTxtBody =
           "user-agent: FooBot\n" + "allow: /x/page.\n" + "disallow: /*.html\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/x/y.html"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", url));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/x/y.html"));
     }
     {
       final String robotsTxtBody =
           "User-agent: *\n" + "Disallow: /x/\n" + "User-agent: FooBot\n" + "Disallow: /y/\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/x/page"));
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/y/page"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/x/page"));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/y/page"));
     }
   }
 
@@ -342,41 +278,29 @@ public class RobotsMatcherTest {
       final String robotsTxtBody =
           "User-agent: FooBot\n" + "Disallow: /foo/bar/quz\n" + "Allow: /foo/*/qux\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/quz"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/quz"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo//quz"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bax/quz"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/quz"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/quz"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo//quz"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bax/quz"));
     }
     {
       final String robotsTxtBody =
           "User-agent: FooBot\n" + "Disallow: /foo/bar$\n" + "Allow: /foo/bar/qux\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/qux"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/"));
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/baz"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/qux"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/baz"));
     }
     {
       final String robotsTxtBody =
           "User-agent: FooBot\n" + "# Disallow: /\n" + "Disallow: /foo/quz#qux\n" + "Allow: /\n";
 
-      try {
-        final Matcher matcher = parse(robotsTxtBody);
-        assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar"));
-        assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/quz"));
-      } catch (final MatchException e) {
-        fail("Matcher has thrown an exception: " + e.getMessage());
-      }
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar"));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/quz"));
     }
   }
 
@@ -404,16 +328,12 @@ public class RobotsMatcherTest {
       "http://foo.bar/x/index.html"
     };
 
-    try {
-      final Matcher matcher = parse(robotsTxtBody);
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[0]));
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[1]));
-      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[2]));
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[3]));
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[4]));
-      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[5]));
-    } catch (final MatchException e) {
-      fail("Matcher has thrown an exception: " + e.getMessage());
-    }
+    final Matcher matcher = parse(robotsTxtBody);
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[0]));
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[1]));
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[2]));
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[3]));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[4]));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[5]));
   }
 }

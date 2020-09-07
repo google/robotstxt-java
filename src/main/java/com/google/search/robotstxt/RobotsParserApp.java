@@ -15,9 +15,8 @@
 package com.google.search.robotstxt;
 
 import com.google.common.flogger.FluentLogger;
-import java.io.BufferedReader;
+import com.google.common.io.ByteStreams;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -25,7 +24,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import picocli.CommandLine;
 
 /**
@@ -67,17 +65,14 @@ public class RobotsParserApp implements Callable<Integer> {
       required = true)
   private String url;
 
-  private String readRobotsTxt() throws ParseException {
+  private byte[] readRobotsTxt() throws ParseException {
     try {
       if (Objects.isNull(robotsTxtPath)) {
         // Reading from stdin
-        try (final BufferedReader bufferedReader =
-            new BufferedReader(new InputStreamReader(System.in))) {
-          return bufferedReader.lines().collect(Collectors.joining("\n", "", "\n"));
-        }
+        return ByteStreams.toByteArray(System.in);
       } else {
         // Reading from file
-        return Files.readString(Path.of(robotsTxtPath));
+        return Files.readAllBytes(Path.of(robotsTxtPath));
       }
     } catch (final UncheckedIOException | IOException | InvalidPathException e) {
       throw new ParseException("Failed to read robots.txt file.", e);
@@ -96,7 +91,7 @@ public class RobotsParserApp implements Callable<Integer> {
    */
   @Override
   public Integer call() {
-    final String robotsTxtContents;
+    final byte[] robotsTxtContents;
     try {
       robotsTxtContents = readRobotsTxt();
     } catch (final ParseException e) {
@@ -108,12 +103,7 @@ public class RobotsParserApp implements Callable<Integer> {
     final RobotsMatcher matcher = (RobotsMatcher) parser.parse(robotsTxtContents);
 
     final boolean parseResult;
-    try {
-      parseResult = matcher.allowedByRobots(agents, url);
-    } catch (final MatchException e) {
-      logError(e);
-      return 2;
-    }
+    parseResult = matcher.allowedByRobots(agents, url);
 
     if (parseResult) {
       System.out.println("ALLOWED");

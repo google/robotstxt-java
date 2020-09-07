@@ -111,6 +111,10 @@ public class RobotsContents {
       rules.add(new Rule(directiveType, directiveValue));
     }
 
+    boolean hasRule(final Parser.DirectiveType directiveType, final String directiveValue) {
+      return rules.contains(new Rule(directiveType, directiveValue));
+    }
+
     public Set<String> getUserAgents() {
       return userAgents;
     }

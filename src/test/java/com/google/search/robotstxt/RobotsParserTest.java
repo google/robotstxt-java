@@ -16,6 +16,7 @@ package com.google.search.robotstxt;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -35,9 +36,9 @@ public class RobotsParserTest {
    */
   private static void parseAndValidate(
       final String robotsTxtBody, final RobotsContents expectedContents) {
-    Parser parser = new RobotsParser(new RobotsParseHandler());
-    Matcher matcher = parser.parse(robotsTxtBody);
-    RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
+    final Parser parser = new RobotsParser(new RobotsParseHandler());
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    final RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents
         .getGroups()
@@ -225,12 +226,32 @@ public class RobotsParserTest {
                     Collections.singletonList(
                         new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/foo/b")))));
 
-    Parser parser = new RobotsParser(new RobotsParseHandler(), 8);
-    Matcher matcher = parser.parse(robotsTxtBody);
-    RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
+    final Parser parser = new RobotsParser(new RobotsParseHandler(), 8);
+    final Matcher matcher = parser.parse(robotsTxtBody.getBytes(StandardCharsets.UTF_8));
+    final RobotsContents actualContents = ((RobotsMatcher) matcher).getRobotsContents();
 
     expectedContents
         .getGroups()
         .forEach(expectedGroup -> assertThat(expectedGroup).isIn(actualContents.getGroups()));
+  }
+
+  /** Verifies: Path normalisation corner case */
+  @Test
+  public void testPathNormalisationCornerCase() {
+    final String robotsTxtBody =
+        "user-agent: FooBot\n" + "disallow: /foo?bar%aa%\n" + "disallow: /foo?bar%aa%a\n";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Collections.singletonList(
+                new RobotsContents.Group(
+                    Collections.singletonList("FooBot"),
+                    Arrays.asList(
+                        new RobotsContents.Group.Rule(
+                            Parser.DirectiveType.DISALLOW, "/foo?bar%AA%"),
+                        new RobotsContents.Group.Rule(
+                            Parser.DirectiveType.DISALLOW, "/foo?bar%AA%a")))));
+
+    parseAndValidate(robotsTxtBody, expectedContents);
   }
 }
