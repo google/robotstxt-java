@@ -143,6 +143,32 @@ public class RobotsParserTest {
     parseAndValidate(robotsTxtBody, expectedContents);
   }
 
+  /** Verifies: Last line may not end with EOL. */
+  @Test
+  public void testNoFinalNewline() {
+    final String robotsTxtBody =
+        "User-Agent: foo\n"
+            + "Allow: /some/path\n"
+            + "User-Agent: bar\n"
+            + "\n"
+            + "\n"
+            + "Disallow: /";
+
+    final RobotsContents expectedContents =
+        new RobotsContents(
+            Arrays.asList(
+                new RobotsContents.Group(
+                    Collections.singletonList("foo"),
+                    Collections.singletonList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.ALLOW, "/some/path"))),
+                new RobotsContents.Group(
+                    Collections.singletonList("bar"),
+                    Collections.singletonList(
+                        new RobotsContents.Group.Rule(Parser.DirectiveType.DISALLOW, "/")))));
+
+    parseAndValidate(robotsTxtBody, expectedContents);
+  }
+
   /** Verifies: surrounding whitespace characters (LF, CR) ignorance. */
   @Test
   public void testWhitespacesParsing() {
@@ -213,7 +239,7 @@ public class RobotsParserTest {
     parseAndValidate(robotsTxtBody, expectedContents);
   }
 
-  /** [Google-specific] Verifies: trimming values to specific number of bytes */
+  /** [Google-specific] Verifies: trimming values to specific number of bytes. */
   @Test
   public void testTrimmingToBytes() {
     final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /foo/bar/baz/qux\n";
@@ -235,7 +261,7 @@ public class RobotsParserTest {
         .forEach(expectedGroup -> assertThat(expectedGroup).isIn(actualContents.getGroups()));
   }
 
-  /** Verifies: Path normalisation corner case */
+  /** Verifies: Path normalisation corner case. */
   @Test
   public void testPathNormalisationCornerCase() {
     final String robotsTxtBody =
