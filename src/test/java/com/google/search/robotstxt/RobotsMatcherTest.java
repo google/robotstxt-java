@@ -32,6 +32,7 @@ public class RobotsMatcherTest {
   public void testSingleGroup() {
     final String robotsTxtBodyCorrect = "user-agent: FooBot\n" + "disallow: /\n";
     final String robotsTxtBodyIncorrect = "foo: FooBot\n" + "bar: /\n";
+    final String robotsTxtMissingSeparator = "user-agent FooBot\n" + "disallow /\n";
 
     final String url = "http://foo.bar/x/y";
 
@@ -40,6 +41,9 @@ public class RobotsMatcherTest {
 
     final Matcher matcherIncorrect = parse(robotsTxtBodyIncorrect);
     assertTrue(matcherIncorrect.singleAgentAllowedByRobots("FooBot", url));
+
+    final Matcher matcherMissingSeparator = parse(robotsTxtMissingSeparator);
+    assertFalse(matcherMissingSeparator.singleAgentAllowedByRobots("FooBot", url));
   }
 
   /**
@@ -137,6 +141,23 @@ public class RobotsMatcherTest {
     assertTrue(matcherRandom.singleAgentAllowedByRobots("foo", urlAllowed));
     assertFalse(matcherRandom.singleAgentAllowedByRobots("Foo", urlDisallowed));
     assertFalse(matcherRandom.singleAgentAllowedByRobots("foo", urlDisallowed));
+  }
+
+  /** [Google-specific] Verifies: accepting user-agent value up to the first space. */
+  @Test
+  public void testAcceptUserAgentUpToFirstSpace() {
+    final String robotsTxtBody =
+        "User-Agent: *\n"
+            + "Disallow: /\n"
+            + "User-Agent: Foo Bar\n"
+            + "Allow: /x/\n"
+            + "Disallow: /\n";
+
+    final String url = "http://foo.bar/x/y";
+
+    final Matcher matcher = parse(robotsTxtBody);
+    assertTrue(matcher.singleAgentAllowedByRobots("Foo", url));
+    assertFalse(matcher.singleAgentAllowedByRobots("Foo Bar", url));
   }
 
   /** Verifies: global rules. */
@@ -271,6 +292,45 @@ public class RobotsMatcherTest {
     }
   }
 
+  /** Verifies: percent-encoding of characters outside the range of the US-ASCII. */
+  @Test
+  public void testPercentEncoding() {
+    {
+      final String robotsTxtBody =
+          "User-agent: FooBot\n"
+              + "Disallow: /\n"
+              + "Allow: /foo/bar?qux=taz&baz=http://foo.bar?tar&par\n";
+
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(
+          matcher.singleAgentAllowedByRobots(
+              "FooBot", "http://foo.bar/foo/bar?qux=taz&baz=http://foo.bar?tar&par"));
+    }
+    {
+      final String robotsTxtBody = "User-agent: FooBot\n" + "Disallow: /\n" + "Allow: /foo/bar/ツ\n";
+
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/%E3%83%84"));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/ツ"));
+    }
+    {
+      final String robotsTxtBody =
+          "User-agent: FooBot\n" + "Disallow: /\n" + "Allow: /foo/bar/%E3%83%84\n";
+
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/%E3%83%84"));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/ツ"));
+    }
+    {
+      final String robotsTxtBody =
+          "User-agent: FooBot\n" + "Disallow: /\n" + "Allow: /foo/bar/%62%61%7A\n";
+
+      final Matcher matcher = parse(robotsTxtBody);
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/baz"));
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/foo/bar/%62%61%7A"));
+    }
+  }
+
   /** Verifies: valid parsing of special characters ('*', '$', '#') */
   @Test
   public void testSpecialCharacters() {
@@ -335,5 +395,24 @@ public class RobotsMatcherTest {
     assertTrue(matcher.singleAgentAllowedByRobots("FooBot", urls[3]));
     assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[4]));
     assertFalse(matcher.singleAgentAllowedByRobots("FooBot", urls[5]));
+  }
+
+  /** [Google-specific] Verifies: Empty arguments corner cases. */
+  @Test
+  public void testEmptyArgs() {
+    {
+      final String robotsTxtBody = "";
+
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("FooBot", ""));
+      assertTrue(matcher.singleAgentAllowedByRobots("", ""));
+    }
+    {
+      final String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /\n";
+
+      final Matcher matcher = parse(robotsTxtBody);
+      assertTrue(matcher.singleAgentAllowedByRobots("", ""));
+      assertFalse(matcher.singleAgentAllowedByRobots("FooBot", ""));
+    }
   }
 }
