@@ -436,9 +436,9 @@ public class RobotsMatcherTest {
 
       final Matcher matcher = parse(robotsTxtBody);
       assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/fux"));
-      assertTrue(
+      assertFalse(
           matcher.singleAgentAllowedByRobots(
-              "", "http://foo.bar" + longValueBuilder.toString() + "/fux"));
+              "FooBot", "http://foo.bar" + longValueBuilder.toString() + "/fux"));
     }
     {
       String robotsTxtBody = "user-agent: FooBot\n" + "disallow: /\n";
