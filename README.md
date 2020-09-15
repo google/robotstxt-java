@@ -77,7 +77,7 @@ and `1` respectively).
 
 You should provide a target URL using `-u` (`--url`) flag. At least one agent
 must be specified using `-a` (`--agent`) flag (verdict `DISALLOWED` is printed
-iff none of the user-agents is allowed to crawl given URL).
+iff none of the user-agents are allowed to crawl given URL).
 
 When flag `-f` (`--file`) is omitted, robots.txt contents are expected to be
 received via standard input:
