@@ -612,4 +612,26 @@ public class RobotsMatcherTest {
       assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://example.com/page.html"));
     }
   }
+    
+  /** [Google-specific] Verifies: common typos in {@code DISALLOW} key should be fixed. */
+  @Test
+  public void testTyposFixes() {
+    final String robotsTxtBody =
+        "user-agent: FooBot\n"
+            + "disallow: /a/\n"
+            + "dissallow: /b/\n"
+            + "dissalow: /c/\n"
+            + "disalow: /d/\n"
+            + "diasllow: /e/\n"
+            + "disallaw: /f/\n";
+
+    final Matcher matcher = parse(robotsTxtBody);
+    assertTrue(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/index.html"));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/a/"));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/b/"));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/c/"));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/d/"));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/e/"));
+    assertFalse(matcher.singleAgentAllowedByRobots("FooBot", "http://foo.bar/f/"));
+  }
 }

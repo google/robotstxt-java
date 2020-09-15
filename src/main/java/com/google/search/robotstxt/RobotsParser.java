@@ -18,6 +18,7 @@ import com.google.common.flogger.FluentLogger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 /** Robots.txt parser implementation. */
 public class RobotsParser extends Parser {
@@ -71,7 +72,15 @@ public class RobotsParser extends Parser {
     } else {
       try {
         return DirectiveType.valueOf(key.toUpperCase());
-      } catch (IllegalArgumentException e) {
+      } catch (final IllegalArgumentException e) {
+        final boolean disallowTypoDetected =
+            Stream.of("dissallow", "dissalow", "disalow", "diasllow", "disallaw")
+                .anyMatch(s -> key.compareToIgnoreCase(s) == 0);
+        if (disallowTypoDetected) {
+          logger.atInfo().log("Fixed typo: \"%s\" -> \"%s\"", key, "disallow");
+          return DirectiveType.DISALLOW;
+        }
+
         return DirectiveType.UNKNOWN;
       }
     }
