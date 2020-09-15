@@ -147,7 +147,7 @@ Apache header:
     limitations under the License.
 
 It can be done easily by using the
-[addlicense](https://github.com/google/addlicense) tool
+[addlicense](https://github.com/google/addlicense) tool.
 
 Install it:
 
